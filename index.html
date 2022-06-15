@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Ultimate Chart List</title>
+        <style>
+
+            .rows-selector {
+                margin: 1em;
+            }
+
+            .columns-selector {
+                margin: 1em;
+            }
+
+            .chart-container {
+                font-size: 0;
+            }
+
+            .chart-bundle {
+                font-size: 16px;
+                display: inline-block;
+                width: 100%;
+                position: relative;
+                border: solid black 1px;
+            }
+
+            .chart-price-div {
+
+            }
+
+            .chart-label {
+                /*position: absolute;*/
+                /*top: 0.2em;*/
+                /*left: 0.4em;*/
+                /*z-index: 1000;*/
+                /*pointer-events: none;*/
+                font-size: large;
+                font-family: Arial, sans-serif;
+                padding: 1em
+            }
+        </style>
+    </head>
+    <body>
+
+        <form class="rows-selector">
+            <input name="grid-rows"
+                   type="radio"
+                   onclick="changeGridRows(value)"
+                   id="grid-rows-1"
+                   value="1">
+            <label for="grid-rows-1">Single Row</label>
+            <input name="grid-rows"
+                   type="radio"
+                   onclick="changeGridRows(value)"
+                   id="grid-rows-2"
+                   value="2">
+            <label for="grid-rows-2">Double Rows</label>
+            <input name="grid-rows"
+                   type="radio"
+                   onclick="changeGridRows(value)"
+                   id="grid-rows-3"
+                   value="3">
+            <label for="grid-rows-3">Triple Rows</label>
+            <input name="grid-rows"
+                   type="radio"
+                   onclick="changeGridRows(value)"
+                   id="grid-rows-4"
+                   value="4"
+                   checked>
+            <label for="grid-rows-4">Quad Rows</label>
+        </form>
+
+        <form class="columns-selector">
+            <input name="grid-columns"
+                   type="radio"
+                   onclick="changeGridColumns(value)"
+                   id="grid-columns-1"
+                   value="1">
+            <label for="grid-columns-1">Single Column</label>
+            <input name="grid-columns"
+                   type="radio"
+                   onclick="changeGridColumns(value)"
+                   id="grid-columns-2"
+                   value="2">
+            <label for="grid-columns-2">Double Columns</label>
+            <input name="grid-columns"
+                   type="radio"
+                   onclick="changeGridColumns(value)"
+                   id="grid-columns-3"
+                   value="3"
+                   checked>
+            <label for="grid-columns-3">Triple Columns</label>
+            <input name="grid-columns"
+                   type="radio"
+                   onclick="changeGridColumns(value)"
+                   id="grid-columns-4"
+                   value="4">
+            <label for="grid-columns-4">Quad Columns</label>
+        </form>
+
+        <div id="chart-container" class="chart-container"></div>
+
+    </body>
+    <script type="text/javascript"
+            src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script>
+
+        // noinspection PointlessArithmeticExpressionJS
+        const klineInterval = {
+            name: "1m",
+            duration: 1 * 60
+        }
+
+        const klineInitLoadLimit = 1000
+
+        const chartContainer = document.getElementById("chart-container")
+        const chartMap = new Map()
+
+        const gridSize = {
+            rows: 4,
+            columns: 3
+        }
+
+        function changeGridRows(rows) {
+            gridSize.rows = rows
+            for (const chart of chartMap.values()) {
+                resizeChart(chart)
+            }
+        }
+
+        function changeGridColumns(columns) {
+            gridSize.columns = columns
+            chartContainer.querySelectorAll(".chart-bundle").forEach(chartBundle => {
+                resizeChartBundle(chartBundle, columns);
+            })
+            for (const chart of chartMap.values()) {
+                resizeChart(chart)
+            }
+        }
+
+        function resizeChartBundle(chartBundle, columns) {
+            chartBundle.style.width = `${(100 / columns) * 0.95}%`
+        }
+
+        function resizeChart(chart) {
+            chart.resize(
+                (window.innerWidth / gridSize.columns) * 0.85,
+                (window.innerHeight / gridSize.rows) * 0.85,
+                true
+            )
+        }
+
+        fetch("https://fapi.binance.com/fapi/v1/exchangeInfo")
+            .then(r => r.json())
+            .then(exchangeInfo => exchangeInfo.symbols)
+            .then(symbolsInfo => symbolsInfo.map(symbolInfo => symbolInfo.symbol))
+            .then(symbols => {
+
+                const klineSeriesMap = new Map()
+
+                let lastBar = {
+                    kline: null,
+                    volume: null
+                }
+
+                const ws = new WebSocket("wss://fstream.binance.com/ws/!markPrice@arr@1s")
+                ws.addEventListener("message", msg => {
+                    for (const markPriceUpdate of JSON.parse(msg.data)) {
+                        const symbol = markPriceUpdate["s"]
+                        const series = klineSeriesMap.get(symbol)
+                        if (!series) continue
+                        const timeMillis = markPriceUpdate["E"]
+                        const timeSeconds = timeMillis / 1000
+                        const time = Math.round(timeSeconds / klineInterval.duration) * klineInterval.duration
+                        const price = markPriceUpdate["p"]
+                        const lastKline = lastBar.kline
+                        if (lastKline && lastKline.time === time) {
+                            series.update({
+                                time: time,
+                                open: lastKline.open,
+                                high: Math.max(lastKline, price),
+                                low: Math.min(lastKline, price),
+                                close: price
+                            })
+                        }
+
+                        const newKlineElement = {
+                            time: time,
+                            open: price,
+                            high: price,
+                            low: price,
+                            close: price
+                        };
+                        series.update(newKlineElement)
+                        lastBar.kline = newKlineElement
+                    }
+                })
+
+                let index = 0
+                const maxChartCount = 1000
+
+                const timer = setInterval(() => {
+                        if (index >= symbols.length || index >= maxChartCount) {
+                            clearInterval(timer)
+                            return
+                        }
+
+                        const symbol = symbols[index++]
+
+                        const chartBundleId = `chart-bundle-${symbol}`
+
+                        chartContainer.insertAdjacentHTML(
+                            "beforeend",
+                            `<div id="${chartBundleId}" class="chart-bundle">
+                                 <span class="chart-label"><a href="https://tradingview.com/symbols/${symbol}" target="_blank" rel="noopener noreferrer">${symbol}</a></span>
+                                 <div class="chart-price-div"></div>
+                              </div>`
+                        )
+
+                        // const chartWidth = window.innerWidth / 4.5
+                        const chartWidth = window.innerWidth * 0.95
+
+                        const chartBundle = document.getElementById(chartBundleId)
+                        const chartPriceDiv = chartBundle.querySelector(`.chart-price-div`)
+                        const chart = LightweightCharts.createChart(chartPriceDiv, {
+                            width: chartWidth,
+                            height: window.innerHeight / 5.5,
+                            crosshair: {
+                                mode: LightweightCharts.CrosshairMode.Normal
+                            },
+                            rightPriceScale: {
+                                scaleMargins: {
+                                    top: 0.1,
+                                    bottom: 0.25
+                                },
+                                borderVisible: true
+                            }
+                        })
+                        resizeChart(chart)
+                        resizeChartBundle(chartBundle, gridSize.columns)
+                        chartMap.set(symbol, chart)
+                        const priceSeries = chart.addCandlestickSeries()
+                        klineSeriesMap.set(symbol, priceSeries)
+                        const volumeSeries = chart.addHistogramSeries({
+                            priceScaleId: '',
+                            priceFormat: {
+                                type: "volume"
+                            },
+                            scaleMargins: {
+                                top: 0.8,
+                                bottom: 0
+                            }
+                        })
+
+                        const binanceKlinesUrl =
+                            `https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${klineInterval.name}&limit=${klineInitLoadLimit}`
+
+                        fetch(binanceKlinesUrl)
+                            .then(r => r.json())
+                            .then(klines => {
+
+                                const klineData = []
+                                const volumeData = []
+
+                                for (const kline of klines) {
+
+                                    const klineElement = {
+                                        time: kline[0] / 1000,
+                                        open: kline[1],
+                                        high: kline[2],
+                                        low: kline[3],
+                                        close: kline[4]
+                                    }
+
+                                    klineData.push(klineElement)
+
+                                    const klinePositive = klineElement.open >= klineElement.close
+                                    const volumeColor = klinePositive ?
+                                        "rgba(255,82,82, 0.5)" :
+                                        "rgba(0, 150, 136, 0.5)"
+
+                                    const volumeElement = {
+                                        time: klineElement.time,
+                                        value: kline[5],
+                                        color: volumeColor
+                                    }
+
+                                    volumeData.push(volumeElement)
+
+                                    lastBar = {
+                                        kline: klineElement,
+                                        volume: volumeElement
+                                    }
+
+                                }
+
+                                priceSeries.setData(klineData)
+                                volumeSeries.setData(volumeData)
+
+                            })
+                    },
+                    1
+                )
+            })
+
+    </script>
+</html>
