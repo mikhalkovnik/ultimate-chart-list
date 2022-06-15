@@ -108,6 +108,8 @@
             src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <script>
 
+        // const maxChartCount = 20
+
         // noinspection PointlessArithmeticExpressionJS
         const klineInterval = {
             name: "1m",
@@ -200,7 +202,6 @@
                 })
 
                 let index = 0
-                const maxChartCount = 1000
 
                 const timer = setInterval(() => {
                         if (index >= symbols.length || index >= maxChartCount) {
