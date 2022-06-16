@@ -44,6 +44,7 @@
     <body>
 
         <h1>Ultimate Chart List</h1>
+        <h3>Displayed charts: <span id="displayed-chart-count"></span></h3>
 
         <form class="rows-selector">
             <input name="grid-rows"
@@ -108,17 +109,18 @@
             src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <script>
 
-        // const maxChartCount = 20
+        const maxChartCount = 1000
 
         // noinspection PointlessArithmeticExpressionJS
         const klineInterval = {
-            name: "1m",
-            duration: 1 * 60
+            name: "15m",
+            duration: 15 * 60
         }
 
         const klineInitLoadLimit = 1000
 
         const chartContainer = document.getElementById("chart-container")
+        const displayedChartCount = document.getElementById("displayed-chart-count")
         const chartMap = new Map()
 
         const gridSize = {
@@ -135,16 +137,24 @@
 
         function changeGridColumns(columns) {
             gridSize.columns = columns
+            resizeChartsWithBundles()
+        }
+
+        window.addEventListener('resize', e => {
+            resizeChartsWithBundles()
+        })
+
+        function resizeChartsWithBundles() {
             chartContainer.querySelectorAll(".chart-bundle").forEach(chartBundle => {
-                resizeChartBundle(chartBundle, columns);
+                resizeChartBundle(chartBundle);
             })
             for (const chart of chartMap.values()) {
                 resizeChart(chart)
             }
         }
 
-        function resizeChartBundle(chartBundle, columns) {
-            chartBundle.style.width = `${(100 / columns) * 0.95}%`
+        function resizeChartBundle(chartBundle) {
+            chartBundle.style.width = `${(100 / gridSize.columns) * 0.95}%`
         }
 
         function resizeChart(chart) {
@@ -155,61 +165,93 @@
             )
         }
 
+        const seriesMap = new Map()
+
+        const ws = new WebSocket("wss://fstream.binance.com/stream")
+        ws.addEventListener("message", msg => {
+
+            const klineEvent = JSON.parse(msg.data)["data"]
+
+            if (klineEvent["result"] === null) return;
+
+            const symbol = klineEvent["s"]
+            const klineUpdate = klineEvent["k"]
+
+            const series = seriesMap.get(symbol)
+            if (!series) return
+
+            const klineSeries = series.kline
+            const volumeSeries = series.volume
+
+            const time = klineUpdate["t"];
+
+            const klineElement = {
+                time: time,
+                open: klineUpdate["o"],
+                high: klineUpdate["h"],
+                low: klineUpdate["l"],
+                close: klineUpdate["c"],
+            };
+
+            klineSeries.update(klineElement)
+
+            const klinePositive = klineElement.open >= klineElement.close
+            const volumeColor = klinePositive ?
+                "rgba(255,82,82, 0.5)" :
+                "rgba(0, 150, 136, 0.5)"
+
+            volumeSeries.update({
+                time: time,
+                value: klineUpdate["v"],
+                color: volumeColor
+            })
+
+        })
+
         fetch("https://fapi.binance.com/fapi/v1/exchangeInfo")
             .then(r => r.json())
             .then(exchangeInfo => exchangeInfo.symbols)
-            .then(symbolsInfo => symbolsInfo.map(symbolInfo => symbolInfo.symbol))
+            .then(symbolsInfo => symbolsInfo.map(symbolInfo => symbolInfo["symbol"]))
             .then(symbols => {
 
-                const klineSeriesMap = new Map()
-
-                let lastBar = {
-                    kline: null,
-                    volume: null
-                }
-
-                const ws = new WebSocket("wss://fstream.binance.com/ws/!markPrice@arr@1s")
-                ws.addEventListener("message", msg => {
-                    for (const markPriceUpdate of JSON.parse(msg.data)) {
-                        const symbol = markPriceUpdate["s"]
-                        const series = klineSeriesMap.get(symbol)
-                        if (!series) continue
-                        const timeMillis = markPriceUpdate["E"]
-                        const timeSeconds = timeMillis / 1000
-                        const time = Math.round(timeSeconds / klineInterval.duration) * klineInterval.duration
-                        const price = markPriceUpdate["p"]
-                        const lastKline = lastBar.kline
-                        if (lastKline && lastKline.time === time) {
-                            series.update({
-                                time: time,
-                                open: lastKline.open,
-                                high: Math.max(lastKline, price),
-                                low: Math.min(lastKline, price),
-                                close: price
-                            })
-                        }
-
-                        const newKlineElement = {
-                            time: time,
-                            open: price,
-                            high: price,
-                            low: price,
-                            close: price
-                        };
-                        series.update(newKlineElement)
-                        lastBar.kline = newKlineElement
-                    }
-                })
-
-                let index = 0
+                let symbolIteratingIndex = 0
 
                 const timer = setInterval(() => {
-                        if (index >= symbols.length || index >= maxChartCount) {
+                        if (symbolIteratingIndex >= symbols.length ||
+                            symbolIteratingIndex >= maxChartCount) {
                             clearInterval(timer)
                             return
                         }
 
-                        const symbol = symbols[index++]
+                        const symbol = symbols[symbolIteratingIndex++]
+
+                        if (!symbol.endsWith("USDT")) return;
+
+                        displayedChartCount.innerText = `${symbolIteratingIndex}`
+
+                        let wsSubscribed = false;
+                        const wsSubscribeTimer = setInterval(() => {
+                            if (wsSubscribed) {
+                                clearInterval(wsSubscribeTimer)
+                                return
+                            }
+
+                            try {
+                                ws.send(JSON.stringify({
+                                    method: "SUBSCRIBE",
+                                    params: [
+                                        `${symbol.toLowerCase()}@kline_${klineInterval.name}`
+                                    ]
+                                }))
+                                wsSubscribed = true
+                            } catch (e) {
+                                if (!(e.name === DOMException.name)) {
+                                    console.log(`Cannot subscribe to ${symbol} klines stream`, e)
+                                }
+                            }
+
+                        }, 500)
+
 
                         const chartBundleId = `chart-bundle-${symbol}`
 
@@ -243,8 +285,7 @@
                         resizeChart(chart)
                         resizeChartBundle(chartBundle, gridSize.columns)
                         chartMap.set(symbol, chart)
-                        const priceSeries = chart.addCandlestickSeries()
-                        klineSeriesMap.set(symbol, priceSeries)
+                        const klineSeries = chart.addCandlestickSeries()
                         const volumeSeries = chart.addHistogramSeries({
                             priceScaleId: '',
                             priceFormat: {
@@ -254,6 +295,10 @@
                                 top: 0.8,
                                 bottom: 0
                             }
+                        })
+                        seriesMap.set(symbol, {
+                            kline: klineSeries,
+                            volume: volumeSeries
                         })
 
                         const binanceKlinesUrl =
@@ -291,19 +336,14 @@
 
                                     volumeData.push(volumeElement)
 
-                                    lastBar = {
-                                        kline: klineElement,
-                                        volume: volumeElement
-                                    }
-
                                 }
 
-                                priceSeries.setData(klineData)
+                                klineSeries.setData(klineData)
                                 volumeSeries.setData(volumeData)
 
                             })
                     },
-                    1
+                    125
                 )
             })
 
