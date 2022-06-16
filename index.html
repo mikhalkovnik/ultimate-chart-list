@@ -113,7 +113,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/d3-format@3"></script>
     <script>
 
-        const humanFormat = d3.format("s")
+        const humanFormat = d3.format(".2s")
 
         const maxChartCount = 1000
 
@@ -162,13 +162,13 @@
         }
 
         function resizeChartBundle(chartBundle) {
-            chartBundle.style.width = `${(100 / gridSize.columns) * 0.95}%`
+            chartBundle.style.width = `${(100 / gridSize.columns) * 0.98}%`
         }
 
         function resizeChart(chart) {
             chart.resize(
-                (window.innerWidth / gridSize.columns) * 0.85,
-                (window.innerHeight / gridSize.rows) * 0.85,
+                (window.innerWidth / gridSize.columns) * 0.95,
+                (window.innerHeight / gridSize.rows) * 0.95,
                 true
             )
         }
