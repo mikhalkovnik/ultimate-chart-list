@@ -5,11 +5,11 @@
         <title>Ultimate Chart List</title>
         <style>
 
-            .rows-selector {
-                margin: 1em;
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif;
             }
 
-            .columns-selector {
+            .rows-columns-selector {
                 margin: 1em;
             }
 
@@ -30,79 +30,82 @@
             }
 
             .chart-label {
-                /*position: absolute;*/
-                /*top: 0.2em;*/
-                /*left: 0.4em;*/
-                /*z-index: 1000;*/
-                /*pointer-events: none;*/
                 font-size: large;
-                font-family: Arial, sans-serif;
                 padding: 1em
             }
         </style>
     </head>
     <body>
 
-        <h1>Ultimate Chart List</h1>
-        <h3>Displayed charts: <span id="displayed-chart-count"></span></h3>
+        <header>
+            <h1>Ultimate Chart List</h1>
+            <h3>Displayed charts: <span id="displayed-chart-count"></span></h3>
+        </header>
 
-        <form class="rows-selector">
-            <input name="grid-rows"
-                   type="radio"
-                   onclick="changeGridRows(value)"
-                   id="grid-rows-1"
-                   value="1">
-            <label for="grid-rows-1">Single Row</label>
-            <input name="grid-rows"
-                   type="radio"
-                   onclick="changeGridRows(value)"
-                   id="grid-rows-2"
-                   value="2">
-            <label for="grid-rows-2">Double Rows</label>
-            <input name="grid-rows"
-                   type="radio"
-                   onclick="changeGridRows(value)"
-                   id="grid-rows-3"
-                   value="3">
-            <label for="grid-rows-3">Triple Rows</label>
-            <input name="grid-rows"
-                   type="radio"
-                   onclick="changeGridRows(value)"
-                   id="grid-rows-4"
-                   value="4"
-                   checked>
-            <label for="grid-rows-4">Quad Rows</label>
-        </form>
+        <main>
+            <form class="rows-columns-selector">
+                Rows:
+                <input name="grid-rows"
+                       type="radio"
+                       onclick="changeGridRows(value)"
+                       id="grid-rows-1"
+                       value="1">
+                <label for="grid-rows-1">1</label>
+                <input name="grid-rows"
+                       type="radio"
+                       onclick="changeGridRows(value)"
+                       id="grid-rows-2"
+                       value="2">
+                <label for="grid-rows-2">2</label>
+                <input name="grid-rows"
+                       type="radio"
+                       onclick="changeGridRows(value)"
+                       id="grid-rows-3"
+                       value="3">
+                <label for="grid-rows-3">3</label>
+                <input name="grid-rows"
+                       type="radio"
+                       onclick="changeGridRows(value)"
+                       id="grid-rows-4"
+                       value="4"
+                       checked>
+                <label for="grid-rows-4">4</label>
+                &emsp;
+                Columns:
+                <input name="grid-columns"
+                       type="radio"
+                       onclick="changeGridColumns(value)"
+                       id="grid-columns-1"
+                       value="1">
+                <label for="grid-columns-1">1</label>
+                <input name="grid-columns"
+                       type="radio"
+                       onclick="changeGridColumns(value)"
+                       id="grid-columns-2"
+                       value="2">
+                <label for="grid-columns-2">2</label>
+                <input name="grid-columns"
+                       type="radio"
+                       onclick="changeGridColumns(value)"
+                       id="grid-columns-3"
+                       value="3"
+                       checked>
+                <label for="grid-columns-3">3</label>
+                <input name="grid-columns"
+                       type="radio"
+                       onclick="changeGridColumns(value)"
+                       id="grid-columns-4"
+                       value="4">
+                <label for="grid-columns-4">4</label>
+            </form>
 
-        <form class="columns-selector">
-            <input name="grid-columns"
-                   type="radio"
-                   onclick="changeGridColumns(value)"
-                   id="grid-columns-1"
-                   value="1">
-            <label for="grid-columns-1">Single Column</label>
-            <input name="grid-columns"
-                   type="radio"
-                   onclick="changeGridColumns(value)"
-                   id="grid-columns-2"
-                   value="2">
-            <label for="grid-columns-2">Double Columns</label>
-            <input name="grid-columns"
-                   type="radio"
-                   onclick="changeGridColumns(value)"
-                   id="grid-columns-3"
-                   value="3"
-                   checked>
-            <label for="grid-columns-3">Triple Columns</label>
-            <input name="grid-columns"
-                   type="radio"
-                   onclick="changeGridColumns(value)"
-                   id="grid-columns-4"
-                   value="4">
-            <label for="grid-columns-4">Quad Columns</label>
-        </form>
+            <div id="chart-container" class="chart-container"></div>
+        </main>
 
-        <div id="chart-container" class="chart-container"></div>
+        <footer>
+            <p>Lazybones Ltd., 2022 &copy; All rights reserved.</p>
+            <a href="https://github.com/mikhalkovnik/ultimate-chart-list">GitHub</a>
+        </footer>
 
     </body>
     <script type="text/javascript"
@@ -171,6 +174,8 @@
         ws.addEventListener("message", msg => {
 
             const klineEvent = JSON.parse(msg.data)["data"]
+
+            if (!klineEvent) return;
 
             if (klineEvent["result"] === null) return;
 
