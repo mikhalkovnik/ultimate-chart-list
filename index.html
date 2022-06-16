@@ -210,8 +210,11 @@
 
         fetch("https://fapi.binance.com/fapi/v1/exchangeInfo")
             .then(r => r.json())
-            .then(exchangeInfo => exchangeInfo.symbols)
-            .then(symbolsInfo => symbolsInfo.map(symbolInfo => symbolInfo["symbol"]))
+            .then(exchangeInfo => exchangeInfo["symbols"])
+            .then(symbolsInfo => symbolsInfo
+                .filter(symbolInfo => symbolInfo["status"] === "TRADING")
+                .filter(symbolInfo => symbolInfo["quoteAsset"] === "USDT")
+                .map(symbolInfo => symbolInfo["symbol"]))
             .then(symbols => {
 
                 let symbolIteratingIndex = 0
@@ -224,8 +227,6 @@
                         }
 
                         const symbol = symbols[symbolIteratingIndex++]
-
-                        if (!symbol.endsWith("USDT")) return;
 
                         displayedChartCount.innerText = `${symbolIteratingIndex}`
 
@@ -251,7 +252,6 @@
                             }
 
                         }, 500)
-
 
                         const chartBundleId = `chart-bundle-${symbol}`
 
