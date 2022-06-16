@@ -110,7 +110,10 @@
     </body>
     <script type="text/javascript"
             src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/d3-format@3"></script>
     <script>
+
+        const humanFormat = d3.format("s")
 
         const maxChartCount = 1000
 
@@ -125,6 +128,8 @@
         const chartContainer = document.getElementById("chart-container")
         const displayedChartCount = document.getElementById("displayed-chart-count")
         const chartMap = new Map()
+        const volumeMap = new Map()
+        const volumeLabelMap = new Map()
 
         const gridSize = {
             rows: 4,
@@ -171,9 +176,40 @@
         const seriesMap = new Map()
 
         const ws = new WebSocket("wss://fstream.binance.com/stream")
+        ws.addEventListener("open", e => {
+            ws.send(JSON.stringify({
+                method: "SUBSCRIBE",
+                params: [
+                    "!miniTicker@arr"
+                ]
+            }))
+        })
         ws.addEventListener("message", msg => {
 
-            const klineEvent = JSON.parse(msg.data)["data"]
+            const event = JSON.parse(msg.data)
+
+            if (event["stream"] === "!miniTicker@arr") {
+
+                const miniTickerEvents = event["data"]
+
+                if (!miniTickerEvents) return;
+
+                for (const miniTickerEvent of miniTickerEvents) {
+
+                    const symbol = miniTickerEvent["s"]
+                    const quoteVolume = miniTickerEvent["q"]
+                    const volumeLabel = volumeLabelMap.get(symbol)
+
+                    if (!volumeLabel) return;
+
+                    volumeLabel.innerText = humanFormat(quoteVolume)
+
+                }
+
+                return;
+            }
+
+            const klineEvent = event["data"]
 
             if (!klineEvent) return;
 
@@ -212,6 +248,18 @@
             })
 
         })
+
+        fetch("https://fapi.binance.com/fapi/v1/ticker/24hr")
+            .then(r => r.json())
+            .then(tickers => tickers.forEach(tickerStats => {
+                const symbol = tickerStats["symbol"];
+                const volume = parseFloat(tickerStats["quoteVolume"]);
+                volumeMap.set(symbol, volume)
+
+                const volumeLabel = volumeLabelMap.get(symbol)
+                if (!volumeLabel) return
+                volumeLabel.innerText = humanFormat(volume)
+            }))
 
         fetch("https://fapi.binance.com/fapi/v1/exchangeInfo")
             .then(r => r.json())
@@ -259,14 +307,18 @@
                         }, 500)
 
                         const chartBundleId = `chart-bundle-${symbol}`
+                        const volumeLabelId = `quote-volume-${symbol}`
 
                         chartContainer.insertAdjacentHTML(
                             "beforeend",
                             `<div id="${chartBundleId}" class="chart-bundle">
-                                 <span class="chart-label"><a href="https://tradingview.com/chart/?symbol=BINANCE%3A${symbol}" target="_blank" rel="noopener noreferrer">${symbol}</a></span>
+                                 <span class="chart-label"><a href="https://tradingview.com/chart/?symbol=BINANCE%3A${symbol}" target="_blank" rel="noopener noreferrer">${symbol}</a>&emsp;$<span id="${volumeLabelId}"></span></span>
                                  <div class="chart-price-div"></div>
                               </div>`
                         )
+
+                        const volumeLabel = document.getElementById(volumeLabelId)
+                        volumeLabelMap.set(symbol, volumeLabel)
 
                         // const chartWidth = window.innerWidth / 4.5
                         const chartWidth = window.innerWidth * 0.95
@@ -347,6 +399,10 @@
                                 volumeSeries.setData(volumeData)
 
                             })
+
+                        const volume = volumeMap.get(symbol)
+                        if (!volume) return;
+                        volumeLabel.innerText = humanFormat(volume)
                     },
                     125
                 )
