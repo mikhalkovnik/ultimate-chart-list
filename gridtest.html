@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Grid Test</title>
+    </head>
+    <style>
+
+        html {
+            font-family: -apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif;
+        }
+
+        .charts-container {
+            padding: 0.5em;
+            display: grid;
+            grid-gap: 0.5em;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(1000, 100em);
+            justify-content: center;
+            background: aqua;
+        }
+
+        .chart-bundle {
+            background: bisque;
+        }
+
+        .chart-label {
+            background: red;
+        }
+
+        .chart-div {
+
+        }
+
+    </style>
+    <body>
+
+        <header>
+            <h1>Ultimate Chart List</h1>
+            <h3>Displayed charts: <span id="displayed-chart-count">0</span></h3>
+            <div>
+                Columns: <span id="column-count">3</span>
+                <button onclick="addColumn()">Add Column</button>
+                <button onclick="removeColumn()">Remove Column</button>
+                Rows:
+                <input id="row-height-slider" type="range" min="0.5" max="7.5" value="3"
+                       step="0.1" oninput="changeRowHeight(value)">
+                <span id="row-height">3</span>%
+            </div>
+        </header>
+
+        <main>
+
+            <div id="charts-container" class="charts-container"></div>
+
+        </main>
+
+    </body>
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script>
+
+        const chartsContainer = document.getElementById('charts-container')
+        const displayedChartCount = document.getElementById('displayed-chart-count')
+        const columnCount = document.getElementById('column-count')
+        const rowHeight = document.getElementById('row-height')
+
+        const cachedSymbols = [
+            "BTCUSDT",
+            "ETHUSDT",
+            "BCHUSDT",
+            "XRPUSDT",
+            "EOSUSDT",
+            "LTCUSDT",
+            "TRXUSDT",
+            "ETCUSDT",
+            "LINKUSDT",
+            "XLMUSDT",
+            "ADAUSDT",
+            "XMRUSDT",
+            "DASHUSDT",
+            "ZECUSDT",
+            "XTZUSDT",
+            "BNBUSDT",
+            "ATOMUSDT",
+            "ONTUSDT",
+            "IOTAUSDT",
+            "BATUSDT",
+            "VETUSDT",
+            "NEOUSDT",
+            "QTUMUSDT",
+            "IOSTUSDT",
+            "THETAUSDT",
+            "ALGOUSDT",
+            "ZILUSDT",
+            "KNCUSDT",
+            "ZRXUSDT",
+            "COMPUSDT",
+            "OMGUSDT",
+            "DOGEUSDT",
+            "SXPUSDT",
+            "KAVAUSDT",
+            "BANDUSDT",
+            "RLCUSDT",
+            "WAVESUSDT",
+            "MKRUSDT",
+            "SNXUSDT",
+            "DOTUSDT",
+            "DEFIUSDT",
+            "YFIUSDT",
+            "BALUSDT",
+            "CRVUSDT",
+            "TRBUSDT",
+            "RUNEUSDT",
+            "SUSHIUSDT",
+            "SRMUSDT",
+            "EGLDUSDT",
+            "SOLUSDT",
+            "ICXUSDT",
+            "STORJUSDT",
+            "BLZUSDT",
+            "UNIUSDT",
+            "AVAXUSDT",
+            "FTMUSDT",
+            "HNTUSDT",
+            "ENJUSDT",
+            "FLMUSDT",
+            "TOMOUSDT",
+            "RENUSDT",
+            "KSMUSDT",
+            "NEARUSDT",
+            "AAVEUSDT",
+            "FILUSDT",
+            "RSRUSDT",
+            "LRCUSDT",
+            "MATICUSDT",
+            "OCEANUSDT",
+            "CVCUSDT",
+            "BELUSDT",
+            "CTKUSDT",
+            "AXSUSDT",
+            "ALPHAUSDT",
+            "ZENUSDT",
+            "SKLUSDT",
+            "GRTUSDT",
+            "1INCHUSDT",
+            "CHZUSDT",
+            "SANDUSDT",
+            "ANKRUSDT",
+            "BTSUSDT",
+            "LITUSDT",
+            "UNFIUSDT",
+            "REEFUSDT",
+            "RVNUSDT",
+            "SFPUSDT",
+            "XEMUSDT",
+            "COTIUSDT",
+            "CHRUSDT",
+            "MANAUSDT",
+            "ALICEUSDT",
+            "HBARUSDT",
+            "ONEUSDT",
+            "LINAUSDT",
+            "STMXUSDT",
+            "DENTUSDT",
+            "CELRUSDT",
+            "HOTUSDT",
+            "MTLUSDT",
+            "OGNUSDT",
+            "NKNUSDT",
+            "DGBUSDT",
+            "1000SHIBUSDT",
+            "BAKEUSDT",
+            "GTCUSDT",
+            "BTCDOMUSDT",
+            "IOTXUSDT",
+            "AUDIOUSDT",
+            "RAYUSDT",
+            "C98USDT",
+            "MASKUSDT",
+            "ATAUSDT",
+            "DYDXUSDT",
+            "1000XECUSDT",
+            "GALAUSDT",
+            "CELOUSDT",
+            "ARUSDT",
+            "KLAYUSDT",
+            "ARPAUSDT",
+            "CTSIUSDT",
+            "LPTUSDT",
+            "ENSUSDT",
+            "PEOPLEUSDT",
+            "ANTUSDT",
+            "ROSEUSDT",
+            "DUSKUSDT",
+            "FLOWUSDT",
+            "IMXUSDT",
+            "API3USDT",
+            "GMTUSDT",
+            "APEUSDT",
+            "BTCUSDT_220624",
+            "ETHUSDT_220624",
+            "BNXUSDT",
+            "WOOUSDT",
+            "FTTUSDT",
+            "JASMYUSDT",
+            "DARUSDT",
+            "GALUSDT",
+            "OPUSDT",
+            "BTCUSDT_220930",
+            "ETHUSDT_220930"
+        ]
+
+        // fetch("https://fapi.binance.com/fapi/v1/exchangeInfo")
+        //     .then(r => r.json())
+        //     .then(exchangeInfo => exchangeInfo["symbols"])
+        //     .then(symbolsInfo => symbolsInfo
+        //         .filter(symbolInfo => symbolInfo["status"] === "TRADING")
+        //         .filter(symbolInfo => symbolInfo["quoteAsset"] === "USDT")
+        //         .map(symbolInfo => symbolInfo["symbol"]))
+        //     .then(symbols => {
+        const symbols = cachedSymbols
+        for (let i = 0; i < symbols.length; i++) {
+
+            const symbol = symbols[i]
+            const volume = randomizeInt(10, 1000)
+
+            const chartDivId = `chart-div-${symbol}`
+
+            chartsContainer.insertAdjacentHTML('beforeend', `
+                        <section class="chart-bundle">
+                            <header>
+                                <div class="chart-label">${symbol}</div>
+                                <div class="chart-volume">${volume}</div>
+                            </header>
+                            <main>
+                                <div id="${chartDivId}" class="chart-div"></div>
+                            </main>
+                        </section>
+                    `)
+
+            const chartDiv = document.getElementById(chartDivId)
+            const chart = new LightweightCharts.createChart(chartDiv, {
+                width: 0,
+                height: 100
+            })
+            const priceLineSeries = chart.addLineSeries()
+            const priceDataLength = randomizeInt(10, 1000)
+            const priceData = []
+            for (let j = 0; j < priceDataLength; j++) {
+                priceData.push({
+                    time: j * 60,
+                    value: randomizeInt(1, 1000)
+                })
+            }
+            priceLineSeries.setData(priceData)
+            chart.timeScale().fitContent()
+            // new ResizeObserver(entries => {
+            //     console.log(entries)
+            //     if (entries.length === 0) return
+            //     const entry = entries[0]
+            //     if (entry.target !== chartDiv) return;
+            //     const newSize = entry.contentRect
+            //     chart.applyOptions({
+            //         width: newSize.width,
+            //         height: newSize.height
+            //     })
+            // }).observe(chartDiv)
+
+            displayedChartCount.innerText = `${parseInt(displayedChartCount.innerText) + 1}`
+        }
+
+        // })
+
+        function addColumn() {
+            const currentColumnCount = parseInt(columnCount.innerText)
+            const newColumnCount = currentColumnCount + 1
+            chartsContainer.style.gridTemplateColumns = `repeat(${newColumnCount}, 1fr)`
+            columnCount.innerText = `${newColumnCount}`
+        }
+
+        function removeColumn() {
+            const currentColumnCount = parseInt(columnCount.innerText)
+            const newColumnCount = currentColumnCount <= 1 ?
+                currentColumnCount :
+                currentColumnCount - 1
+            chartsContainer.style.gridTemplateColumns = `repeat(${newColumnCount}, 1fr)`
+            columnCount.innerText = `${newColumnCount}`
+        }
+
+        function changeRowHeight(rowHeightPercent) {
+            chartsContainer.style.gridTemplateRows = `repeat(${parseInt(displayedChartCount.innerText)}, ${rowHeightPercent}%)`
+            rowHeight.innerText = `${rowHeightPercent}`
+        }
+
+        function randomizeInt(min, max) {
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+
+    </script>
+</html>
