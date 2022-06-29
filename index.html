@@ -225,9 +225,9 @@
             resizeChartsWithBundles()
         }
 
-        // window.addE`ventListener('resize', e => {
-        //     resizeChartsWithBundles()
-        // })`
+        window.addEventListener('resize', e => {
+            resizeChartsWithBundles()
+        })
 
         function resizeChartsWithBundles() {
             chartContainer.querySelectorAll(".chart-bundle").forEach(chartBundle => {
@@ -252,79 +252,79 @@
 
         const seriesMap = new Map()
 
-        // const ws = new WebSocket("wss://fstream.binance.com/stream")
-        // ws.addEventListener("open", e => {
-        //     ws.send(JSON.stringify({
-        //         method: "SUBSCRIBE",
-        //         params: [
-        //             "!miniTicker@arr"
-        //         ]
-        //     }))
-        // })
-        // ws.addEventListener("message", msg => {
-        //
-        //     const event = JSON.parse(msg.data)
-        //
-        //     if (event["stream"] === "!miniTicker@arr") {
-        //
-        //         const miniTickerEvents = event["data"]
-        //
-        //         if (!miniTickerEvents) return;
-        //
-        //         for (const miniTickerEvent of miniTickerEvents) {
-        //
-        //             const symbol = miniTickerEvent["s"]
-        //             const quoteVolume = miniTickerEvent["q"]
-        //             const volumeLabel = volumeLabelMap.get(symbol)
-        //
-        //             if (!volumeLabel) return;
-        //
-        //             volumeLabel.innerText = humanFormat(quoteVolume)
-        //
-        //         }
-        //
-        //         return;
-        //     }
-        //
-        //     const klineEvent = event["data"]
-        //
-        //     if (!klineEvent) return;
-        //
-        //     if (klineEvent["result"] === null) return;
-        //
-        //     const symbol = klineEvent["s"]
-        //     const klineUpdate = klineEvent["k"]
-        //
-        //     const series = seriesMap.get(symbol)
-        //     if (!series) return
-        //
-        //     const klineSeries = series.kline
-        //     const volumeSeries = series.volume
-        //
-        //     const time = klineUpdate["t"];
-        //
-        //     const klineElement = {
-        //         time: time,
-        //         open: klineUpdate["o"],
-        //         high: klineUpdate["h"],
-        //         low: klineUpdate["l"],
-        //         close: klineUpdate["c"],
-        //     };
-        //
-        //     klineSeries.update(klineElement)
-        //
-        //     const klinePositive = klineElement.open >= klineElement.close
-        //     const volumeColor = klinePositive ?
-        //         "rgba(255,82,82, 0.5)" :
-        //         "rgba(0, 150, 136, 0.5)"
-        //
-        //     volumeSeries.update({
-        //         time: time,
-        //         value: klineUpdate["v"],
-        //         color: volumeColor
-        //     })
-        //
-        // })
+        const ws = new WebSocket("wss://fstream.binance.com/stream")
+        ws.addEventListener("open", e => {
+            ws.send(JSON.stringify({
+                method: "SUBSCRIBE",
+                params: [
+                    "!miniTicker@arr"
+                ]
+            }))
+        })
+        ws.addEventListener("message", msg => {
+
+            const event = JSON.parse(msg.data)
+
+            if (event["stream"] === "!miniTicker@arr") {
+
+                const miniTickerEvents = event["data"]
+
+                if (!miniTickerEvents) return;
+
+                for (const miniTickerEvent of miniTickerEvents) {
+
+                    const symbol = miniTickerEvent["s"]
+                    const quoteVolume = miniTickerEvent["q"]
+                    const volumeLabel = volumeLabelMap.get(symbol)
+
+                    if (!volumeLabel) return;
+
+                    volumeLabel.innerText = humanFormat(quoteVolume)
+
+                }
+
+                return;
+            }
+
+            const klineEvent = event["data"]
+
+            if (!klineEvent) return;
+
+            if (klineEvent["result"] === null) return;
+
+            const symbol = klineEvent["s"]
+            const klineUpdate = klineEvent["k"]
+
+            const series = seriesMap.get(symbol)
+            if (!series) return
+
+            const klineSeries = series.kline
+            const volumeSeries = series.volume
+
+            const time = klineUpdate["t"];
+
+            const klineElement = {
+                time: time,
+                open: klineUpdate["o"],
+                high: klineUpdate["h"],
+                low: klineUpdate["l"],
+                close: klineUpdate["c"],
+            };
+
+            klineSeries.update(klineElement)
+
+            const klinePositive = klineElement.open >= klineElement.close
+            const volumeColor = klinePositive ?
+                "rgba(255,82,82, 0.5)" :
+                "rgba(0, 150, 136, 0.5)"
+
+            volumeSeries.update({
+                time: time,
+                value: klineUpdate["v"],
+                color: volumeColor
+            })
+
+        })
 
         fetch("https://fapi.binance.com/fapi/v1/ticker/24hr")
             .then(r => r.json())
@@ -360,28 +360,28 @@
 
                         displayedChartCount.innerText = `${symbolIteratingIndex}`
 
-                        // let wsSubscribed = false;
-                        // const wsSubscribeTimer = setInterval(() => {
-                        //     if (wsSubscribed) {
-                        //         clearInterval(wsSubscribeTimer)
-                        //         return
-                        //     }
-                        //
-                        //     try {
-                        //         ws.send(JSON.stringify({
-                        //             method: "SUBSCRIBE",
-                        //             params: [
-                        //                 `${symbol.toLowerCase()}@kline_${klineInterval.name}`
-                        //             ]
-                        //         }))
-                        //         wsSubscribed = true
-                        //     } catch (e) {
-                        //         if (!(e.name === DOMException.name)) {
-                        //             console.log(`Cannot subscribe to ${symbol} klines stream`, e)
-                        //         }
-                        //     }
-                        //
-                        // }, 500)
+                        let wsSubscribed = false;
+                        const wsSubscribeTimer = setInterval(() => {
+                            if (wsSubscribed) {
+                                clearInterval(wsSubscribeTimer)
+                                return
+                            }
+
+                            try {
+                                ws.send(JSON.stringify({
+                                    method: "SUBSCRIBE",
+                                    params: [
+                                        `${symbol.toLowerCase()}@kline_${klineInterval.name}`
+                                    ]
+                                }))
+                                wsSubscribed = true
+                            } catch (e) {
+                                if (!(e.name === DOMException.name)) {
+                                    console.log(`Cannot subscribe to ${symbol} klines stream`, e)
+                                }
+                            }
+
+                        }, 500)
 
                         const chartBundleId = `chart-bundle-${symbol}`
                         const volumeLabelId = `quote-volume-${symbol}`
@@ -438,44 +438,44 @@
                         const binanceKlinesUrl =
                             `https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${klineInterval.name}&limit=${klineInitLoadLimit}`
 
-                        // fetch(binanceKlinesUrl)
-                        //     .then(r => r.json())
-                        //     .then(klines => {
-                        //
-                        //         const klineData = []
-                        //         const volumeData = []
-                        //
-                        //         for (const kline of klines) {
-                        //
-                        //             const klineElement = {
-                        //                 time: kline[0] / 1000,
-                        //                 open: kline[1],
-                        //                 high: kline[2],
-                        //                 low: kline[3],
-                        //                 close: kline[4]
-                        //             }
-                        //
-                        //             klineData.push(klineElement)
-                        //
-                        //             const klinePositive = klineElement.open >= klineElement.close
-                        //             const volumeColor = klinePositive ?
-                        //                 "rgba(255,82,82, 0.5)" :
-                        //                 "rgba(0, 150, 136, 0.5)"
-                        //
-                        //             const volumeElement = {
-                        //                 time: klineElement.time,
-                        //                 value: kline[5],
-                        //                 color: volumeColor
-                        //             }
-                        //
-                        //             volumeData.push(volumeElement)
-                        //
-                        //         }
-                        //
-                        //         klineSeries.setData(klineData)
-                        //         volumeSeries.setData(volumeData)
-                        //
-                        //     })
+                        fetch(binanceKlinesUrl)
+                            .then(r => r.json())
+                            .then(klines => {
+
+                                const klineData = []
+                                const volumeData = []
+
+                                for (const kline of klines) {
+
+                                    const klineElement = {
+                                        time: kline[0] / 1000,
+                                        open: kline[1],
+                                        high: kline[2],
+                                        low: kline[3],
+                                        close: kline[4]
+                                    }
+
+                                    klineData.push(klineElement)
+
+                                    const klinePositive = klineElement.open >= klineElement.close
+                                    const volumeColor = klinePositive ?
+                                        "rgba(255,82,82, 0.5)" :
+                                        "rgba(0, 150, 136, 0.5)"
+
+                                    const volumeElement = {
+                                        time: klineElement.time,
+                                        value: kline[5],
+                                        color: volumeColor
+                                    }
+
+                                    volumeData.push(volumeElement)
+
+                                }
+
+                                klineSeries.setData(klineData)
+                                volumeSeries.setData(volumeData)
+
+                            })
 
                         const volume = volumeMap.get(symbol)
                         if (!volume) return;

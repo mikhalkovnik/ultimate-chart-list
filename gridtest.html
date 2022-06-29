@@ -10,6 +10,10 @@
             font-family: -apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif;
         }
 
+        .controls-bar {
+            margin: 0.5em;
+        }
+
         .charts-container {
             padding: 0.5em;
             display: grid;
@@ -38,7 +42,7 @@
         <header>
             <h1>Ultimate Chart List</h1>
             <h3>Displayed charts: <span id="displayed-chart-count">0</span></h3>
-            <div>
+            <div class="controls-bar">
                 Columns: <span id="column-count">3</span>
                 <button onclick="addColumn()">Add Column</button>
                 <button onclick="removeColumn()">Remove Column</button>
@@ -219,15 +223,17 @@
         //         .map(symbolInfo => symbolInfo["symbol"]))
         //     .then(symbols => {
         const symbols = cachedSymbols
+        // const symbols = []
         for (let i = 0; i < symbols.length; i++) {
 
             const symbol = symbols[i]
             const volume = randomizeInt(10, 1000)
 
+            const chartBundleId = `chart-bundle-${symbol}`
             const chartDivId = `chart-div-${symbol}`
 
             chartsContainer.insertAdjacentHTML('beforeend', `
-                        <section class="chart-bundle">
+                        <section id="${chartBundleId}" class="chart-bundle">
                             <header>
                                 <div class="chart-label">${symbol}</div>
                                 <div class="chart-volume">${volume}</div>
@@ -238,11 +244,15 @@
                         </section>
                     `)
 
+            const chartBundle = document.getElementById(chartBundleId)
+            chartBundle.st
+
             const chartDiv = document.getElementById(chartDivId)
-            const chart = new LightweightCharts.createChart(chartDiv, {
+            const chart = LightweightCharts.createChart(chartDiv, {
                 width: 0,
                 height: 100
             })
+
             const priceLineSeries = chart.addLineSeries()
             const priceDataLength = randomizeInt(10, 1000)
             const priceData = []
@@ -266,7 +276,8 @@
             //     })
             // }).observe(chartDiv)
 
-            displayedChartCount.innerText = `${parseInt(displayedChartCount.innerText) + 1}`
+            // displayedChartCount.innerText = `${parseInt(displayedChartCount.innerText) + 1}`
+            displayedChartCount.innerText = `${i + 1}`
         }
 
         // })
@@ -290,11 +301,16 @@
         function changeRowHeight(rowHeightPercent) {
             chartsContainer.style.gridTemplateRows = `repeat(${parseInt(displayedChartCount.innerText)}, ${rowHeightPercent}%)`
             rowHeight.innerText = `${rowHeightPercent}`
+            document.querySelectorAll(".chart-bundle > main > div > div").forEach(chart => {
+                chart.offsetHeight = chart.parentElement.offsetHeight
+            })
         }
 
         function randomizeInt(min, max) {
             return Math.floor(Math.random() * (max - min)) + min;
         }
+
+        changeRowHeight(parseInt(rowHeight.innerText))
 
     </script>
 </html>
