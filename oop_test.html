@@ -47,7 +47,8 @@
 
             .chart-bundle__header__symbol {
                 background: lightblue;
-                font-size: xxx-large;
+                font-size: x-large;
+                font-weight: bold;
             }
 
             .chart-bundle__header__volume {
@@ -101,9 +102,9 @@
                 </span>
                 <span class="page-header__controls__control">
                     Chart Scales:
-                    <input type="checkbox" name="chart-scales-visibility" value="priceScale" id="priceScale" onclick="charts.changeScaleVisibility(value, checked)">
-                    <label for="priceScale">Price</label>
-                    <input type="checkbox" name="chart-scales-visibility" value="timeScale" id="timeScale" onclick="charts.changeScaleVisibility(value, checked)">
+                    <input type="checkbox" name="chart-scales-visibility" value="rightPriceScale" id="rightPriceScale" onclick="chartsContainer.changeScaleVisibility(value, checked)">
+                    <label for="rightPriceScale">Price</label>
+                    <input type="checkbox" name="chart-scales-visibility" value="timeScale" id="timeScale" onclick="chartsContainer.changeScaleVisibility(value, checked)">
                     <label for="timeScale">Time</label>
                 </span>
             </section>
@@ -140,6 +141,7 @@
                 this.chartDiv = document.getElementById(this.chartDivId)
                 this.tvChart = this.createLightweightChart(this.chartDiv)
                 this.candlestickSeries = this.tvChart.addCandlestickSeries()
+                this.applyScalesVisibilityFromCookies()
 
                 this.chartBundle.style.order = `${this.volume}`
             }
@@ -164,12 +166,25 @@
                     width: 0,
                     height: 300,
                     rightPriceScale: {
-                        visible: false
+                        // visible: false
                     },
                     timeScale: {
-                        visible: false
+                        // visible: false
                     }
                 });
+            }
+
+            applyScalesVisibilityFromCookies() {
+                const cookies = Cookies.get()
+                for (const cookieName of Object.keys(cookies)) {
+                    if (cookieName.endsWith('Scale')) {
+                        const visibility = JSON.parse(cookies[cookieName])['visible'];
+                        this.changeScaleVisibility(cookieName, visibility)
+                        const checkbox = document.getElementById(cookieName);
+                        checkbox.checked = visibility
+                        // document.getElementById(cookieName).checked = true
+                    }
+                }
             }
 
             setCandlestickData(data) {
@@ -195,13 +210,17 @@
             }
 
             recalculateWidth() {
-                // this.tvChart.applyOptions({width: this.chartDiv.clientWidth * 0.9})
                 this.tvChart.applyOptions({width: this.chartDiv.clientWidth})
-                // this.tvChart.applyOptions({width: 0})
             }
 
             changeScaleVisibility(scale, visibility) {
-                this.tvChart[scale]().applyOptions({visible: visibility}) // TODO: fix scales visibility changing
+                const options = {}
+                options[scale] = {
+                    visible: visibility
+                }
+                this.tvChart.applyOptions(options)
+                this.fitContent()
+                Cookies.set(scale, JSON.stringify({visible: visibility}))
             }
 
         }
@@ -1156,13 +1175,6 @@
             chart.setCandlestickData(data)
             chart.fitContent()
         }
-
-        // window.addEventListener('resize', e => {
-        //     for (const chart of chartsContainer.charts.values()) {
-        //         chart.recalculateWidth()
-        //         chart.fitContent()
-        //     }
-        // })
 
 
         // #============0!0============#
