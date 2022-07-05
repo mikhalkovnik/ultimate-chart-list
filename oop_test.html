@@ -13,10 +13,22 @@
                 text-align: center;
             }
 
+            .page-header__controls {
+                margin: 1em 0 1em 0;
+                display: flex;
+                justify-content: center;
+                gap: 0.5em
+            }
+
+            .page-header__controls__control {
+                padding: 0.5em;
+                background: lightgrey;
+                border-radius: 1em;
+            }
+
             .charts-container {
                 display: grid;
-                grid-gap: 0.5rem;
-                /*grid-template-columns: repeat(3, 1fr);*/
+                gap: 0.5rem;
                 justify-content: center;
                 background: lightgray;
             }
@@ -35,10 +47,19 @@
 
             .chart-bundle__header__symbol {
                 background: lightblue;
+                font-size: xxx-large;
             }
 
             .chart-bundle__header__volume {
                 background: lightsalmon;
+            }
+
+            .chart-bundle__header__capitalization {
+                background: lightcoral;
+            }
+
+            .chart-bundle__header__percent-change {
+                background: lightyellow;
             }
 
             .chart-bundle__div {
@@ -56,15 +77,29 @@
         <header class="page-header">
             <h1>Ultimate Chart List</h1>
             <h2>Displayed charts: <span id="displayed-chart-count">0</span></h2>
-            <section>
-                Columns
-                <button onclick="chartsContainer.addColumn()">+</button>
-                <button onclick="chartsContainer.removeColumn()">-</button>
+            <section class="page-header__controls">
+                <span class="page-header__controls__control">
+                    Columns:
+                    <button onclick="chartsContainer.addColumn()">+</button>
+                    <button onclick="chartsContainer.removeColumn()">-</button>
+                </span>
+                <span class="page-header__controls__control">
+                    Sort Property:
+                    <input type="radio" name="sort-property" value="capitalization" id="capitalization" onclick="chartsContainer.changeSortProperty(value)">
+                    <label for="capitalization">Capitalization</label>
+                    <input type="radio" name="sort-property" value="volume" id="volume" onclick="chartsContainer.changeSortProperty(value)" checked>
+                    <label for="volume">Volume</label>
+                    <input type="radio" name="sort-property" value="percentChange" id="percentChange" onclick="chartsContainer.changeSortProperty(value)">
+                    <label for="percentChange">24hr Change %</label>
+                </span>
+                <span class="page-header__controls__control">
+                    Sort Direction:
+                    <input type="radio" name="sort-direction" value="desc" id="desc" onclick="chartsContainer.changeSortDirection(value)" checked>
+                    <label for="desc">Desc</label>
+                    <input type="radio" name="sort-direction" value="asc" id="asc" onclick="chartsContainer.changeSortDirection(value)">
+                    <label for="asc">Asc</label>
+                </span>
             </section>
-<!--            <section>-->
-<!--                Sort-->
-<!--                <input type="radio" >Capitalization</input>-->
-<!--            </section>-->
         </header>
 
         <main id="charts-container" class="charts-container"></main>
@@ -80,15 +115,19 @@
 
         class Chart {
 
-            constructor(symbol, volume) {
+            constructor(symbol, volume, capitalization, percentChange) {
                 this.symbol = symbol
                 this.volume = volume
+                this.capitalization = capitalization
+                this.percentChange = percentChange
+                this.sortProperty = 'volume'
+                this.sortDirection = -1
             }
 
             spawnBundle(chartsContainer) {
                 this.chartBundleId = `chart-bundle-${this.symbol}`
                 this.chartDivId = `chart-div-${this.symbol}`
-                const bundleHtml = this.generateBundleHtml(this.chartBundleId, this.chartDivId, this.symbol, this.volume);
+                const bundleHtml = this.generateBundleHtml();
                 chartsContainer.insertAdjacentHTML('beforeend', bundleHtml)
                 this.chartBundle = document.getElementById(this.chartBundleId)
                 this.chartDiv = document.getElementById(this.chartDivId)
@@ -98,14 +137,16 @@
                 this.chartBundle.style.order = `${this.volume}`
             }
 
-            generateBundleHtml(chartBundleId, chartDivId, symbol, volume) {
+            generateBundleHtml() {
                 return `
-                <section id="${chartBundleId}" class="chart-bundle">
+                <section id="${this.chartBundleId}" class="chart-bundle">
                     <header class="chart-bundle__header">
-                        <h3 class="chart-bundle__header__symbol">${symbol}</h3>
-                        <h3 class="chart-bundle__header__volume">${volume}</h3>
+                        <h3 class="chart-bundle__header__symbol">${this.symbol}</h3>
+                        <h3 class="chart-bundle__header__volume">Vol: ${this.volume}$</h3>
+                        <h3 class="chart-bundle__header__capitalization">Cap: ${this.capitalization}$</h3>
+                        <h3 class="chart-bundle__header__percent-change">Change: ${this.percentChange}%</h3>
                     </header>
-                    <main id="${chartDivId}" class="chart-bundle__div"></main>
+                    <main id="${this.chartDivId}" class="chart-bundle__div"></main>
                 </section>
                 `
             }
@@ -126,8 +167,18 @@
                 this.tvChart.timeScale().fitContent()
             }
 
-            changeDisplayOrder(order) {
-                this.chartBundle.style.order = `${order}`
+            changeSortProperty(sortProperty) {
+                this.sortProperty = sortProperty
+                this.changeSort()
+            }
+
+            changeSortDirection(sortDirection) {
+                this.sortDirection = sortDirection
+                this.changeSort()
+            }
+
+            changeSort() {
+                this.chartBundle.style.order = `${this.sortDirection * this[this.sortProperty]}`
             }
 
             recalculateWidth() {
@@ -158,8 +209,8 @@
                 })
             }
 
-            spawnChart(symbol, volume) {
-                const chart = new Chart(symbol, volume)
+            spawnChart(symbol, volume, capitalization, percentChange) {
+                const chart = new Chart(symbol, volume, capitalization, percentChange)
                 this.charts.set(symbol, chart)
                 chart.spawnBundle(this.chartsContainer)
                 this.displayedChartCount.innerText = `${1 + parseInt(this.displayedChartCount.innerText)}`
@@ -186,6 +237,18 @@
                 this.applyColumnCount()
             }
 
+            changeSortProperty(sortProperty) {
+                for (const chart of this.charts.values()) {
+                    chart.changeSortProperty(sortProperty)
+                }
+            }
+
+            changeSortDirection(sortDirection) {
+                const direction = sortDirection === 'asc' ? 1 : -1
+                for (const chart of this.charts.values()) {
+                    chart.changeSortDirection(direction)
+                }
+            }
         }
 
 
@@ -1054,10 +1117,13 @@
         ]
 
         // for (let i = 0; i < cachedSymbols.length; i++) {
-            for (let i = 0; i < 20; i++) {
-            const symbol = cachedSymbols[i].symbol
-            const volume = cachedSymbols[i].volume
-            const chart = chartsContainer.spawnChart(symbol, volume)
+        for (let i = 0; i < 20; i++) {
+            const chart = chartsContainer.spawnChart(
+                cachedSymbols[i].symbol,
+                cachedSymbols[i].volume,
+                cachedSymbols[i].capitalization,
+                cachedSymbols[i].percentChange
+            )
 
             const dataLength = randomizeInt(10, 100)
             const data = []
