@@ -31,40 +31,49 @@
                 gap: 0.5rem;
                 justify-content: center;
                 background: lightgray;
+                border-radius: 2em;
             }
 
             .chart-bundle {
-                background: lightgreen;
+                background: white;
                 overflow: hidden;
+                border: gray 0.25em solid;
+                border-radius: 2em;
             }
 
             .chart-bundle__header {
-                background: hotpink;
-                margin: 0 10% 0 10%;
-                padding: 0 1em 0 1em;
+                /*background: hotpink;*/
+                /*margin: 0 10% 0 10%;*/
+                /*padding: 0 1em 0 1em;*/
                 text-align: center;
+                display: grid;
+                grid-template-columns: 1fr;
             }
 
             .chart-bundle__header__symbol {
-                background: lightblue;
+                /*background: lightblue;*/
+                margin: 0.25em;
+                padding: 0;
                 font-size: x-large;
                 font-weight: bold;
             }
 
             .chart-bundle__header__volume {
-                background: lightsalmon;
+                /*background: lightsalmon;*/
             }
 
             .chart-bundle__header__capitalization {
-                background: lightcoral;
+                /*background: lightcoral;*/
             }
 
             .chart-bundle__header__percent-change {
-                background: lightyellow;
+                /*background: lightyellow;*/
             }
 
             .chart-bundle__div {
                 background: deepskyblue;
+                border-top: black 0.25em solid;
+                margin-top: 0.5em;
             }
 
             .page-footer {
@@ -132,16 +141,24 @@
                 this.sortDirection = -1
             }
 
-            spawnBundle(chartsContainer) {
+            spawnBundle(chartsContainer, containerElement) {
                 this.chartBundleId = `chart-bundle-${this.symbol}`
                 this.chartDivId = `chart-div-${this.symbol}`
+                this.percentChangeId = `chart-percent-change-${this.symbol}`
                 const bundleHtml = this.generateBundleHtml();
-                chartsContainer.insertAdjacentHTML('beforeend', bundleHtml)
+                containerElement.insertAdjacentHTML('beforeend', bundleHtml)
                 this.chartBundle = document.getElementById(this.chartBundleId)
                 this.chartDiv = document.getElementById(this.chartDivId)
+                this.percentChangeSpan = document.getElementById(this.percentChangeId)
+                this.percentChangeSpan.style.color = this.percentChange >= 0 ? 'green' : 'red'
                 this.tvChart = this.createLightweightChart(this.chartDiv)
                 this.candlestickSeries = this.tvChart.addCandlestickSeries()
                 this.applyScalesVisibilityFromCookies()
+                this.tvChart.subscribeCrosshairMove(e => {
+                    if (!e.point) return
+                    // TODO Implement synchronized crosshairs in all charts
+                    // chartsContainer.moveCrosshair(e.point)
+                })
 
                 this.chartBundle.style.order = `${this.volume}`
             }
@@ -151,9 +168,9 @@
                 <section id="${this.chartBundleId}" class="chart-bundle">
                     <header class="chart-bundle__header">
                         <h3 class="chart-bundle__header__symbol">${this.symbol}</h3>
-                        <h3 class="chart-bundle__header__volume">Vol: ${this.volume}$</h3>
-                        <h3 class="chart-bundle__header__capitalization">Cap: ${this.capitalization}$</h3>
-                        <h3 class="chart-bundle__header__percent-change">Change: ${this.percentChange}%</h3>
+                        <span class="chart-bundle__header__capitalization">Capitalization: ${this.capitalization}$</span>
+                        <span class="chart-bundle__header__volume">24hr Volume: ${this.volume}$</span>
+                        <span class="chart-bundle__header__percent-change">24hr Change: <span id="${this.percentChangeId}">${this.percentChange}</span>%</span>
                     </header>
                     <main id="${this.chartDivId}" class="chart-bundle__div"></main>
                 </section>
@@ -162,15 +179,8 @@
 
             createLightweightChart(chartDiv) {
                 return LightweightCharts.createChart(chartDiv, {
-                    // width: chartDiv.clientWidth * 0.9,
                     width: 0,
-                    height: 300,
-                    rightPriceScale: {
-                        // visible: false
-                    },
-                    timeScale: {
-                        // visible: false
-                    }
+                    height: 300
                 });
             }
 
@@ -182,7 +192,6 @@
                         this.changeScaleVisibility(cookieName, visibility)
                         const checkbox = document.getElementById(cookieName);
                         checkbox.checked = visibility
-                        // document.getElementById(cookieName).checked = true
                     }
                 }
             }
@@ -248,7 +257,7 @@
             spawnChart(symbol, volume, capitalization, percentChange) {
                 const chart = new Chart(symbol, volume, capitalization, percentChange)
                 this.charts.set(symbol, chart)
-                chart.spawnBundle(this.chartsContainer)
+                chart.spawnBundle(this, this.chartsContainer)
                 this.displayedChartCount.innerText = `${1 + parseInt(this.displayedChartCount.innerText)}`
                 this.applyColumnCount()
                 return chart
@@ -289,6 +298,18 @@
             changeScaleVisibility(scale, visibility) {
                 for (const chart of this.charts.values()) {
                     chart.changeScaleVisibility(scale, visibility)
+                }
+            }
+
+            moveCrosshair(point) {
+                // const artificialEvent = new MouseEvent('mousemove', {
+                //     view: window,
+                //     clientX: point.x - ,
+                //     clientY: point.y
+                // })
+                // console.log(artificialEvent);
+                for (const chart of this.charts.values()) {
+                    chart.chartDiv.querySelector('div.tv-lightweight-charts').dispatchEvent(artificialEvent)
                 }
             }
         }
