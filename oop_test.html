@@ -155,7 +155,13 @@
                 return LightweightCharts.createChart(chartDiv, {
                     // width: chartDiv.clientWidth * 0.9,
                     width: 0,
-                    height: 300
+                    height: 300,
+                    rightPriceScale: {
+                        visible: false
+                    },
+                    timeScale: {
+                        visible: false
+                    }
                 });
             }
 
