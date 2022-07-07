@@ -80,6 +80,24 @@
                 text-align: center;
             }
 
+            .alarm {
+                position: relative;
+            }
+
+            .alarm:before {
+                position: absolute;
+                display: block;
+                z-index: 10;
+                height: 100%;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                content: '';
+                background: rgb(255 0 0 / 0.5);
+                pointer-events: none;
+            }
+
         </style>
     </head>
     <body>
@@ -154,11 +172,25 @@
                 this.tvChart = this.createLightweightChart(this.chartDiv)
                 this.candlestickSeries = this.tvChart.addCandlestickSeries()
                 this.applyScalesVisibilityFromCookies()
-                this.tvChart.subscribeCrosshairMove(e => {
-                    if (!e.point) return
-                    // TODO Implement synchronized crosshairs in all charts
-                    // chartsContainer.moveCrosshair(e.point)
-                })
+                setTimeout(() => {
+                    this.tvChart.timeScale().subscribeVisibleLogicalRangeChange(logicalRange => {
+                        const windowHeight = window.innerHeight;
+                        const windowScroll = window.scrollY;
+                        const windowBottom = windowHeight + windowScroll;
+                        for (const chart of chartsContainer.charts.values()) {
+                            if (chart === this.tvChart) return
+                            const chartRect = chart.chartDiv.getBoundingClientRect();
+                            if (chartRect.top < windowScroll) return;
+                            if (chartRect.bottom > windowBottom) return;
+                            console.log(chart.chartDiv)
+                            // chart.tvChart.timeScale().setVisibleLogicalRange(logicalRange)
+                            chart.chartDiv.classList.add('alarm')
+                            setTimeout(() => {
+                                // chart.chartDiv.classList.remove('alarm')
+                            }, 1000)
+                        }
+                    })
+                }, 2000)
 
                 this.chartBundle.style.order = `${this.volume}`
             }
