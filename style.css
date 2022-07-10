@@ -1,5 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
+
 html {
-    font-family: Calibri;
-    font-size: 213px;
-    margin: 10em;
+    padding: 0;
+}
+
+body{
+    padding: 0;
+}
+
+.page-header{
+    height: 15vh;
+    background: #755E9C;
+    gap: 5%;
+    display: flex;
+    align-items: center;
+    width: 100vw;
+}
+
+.page-header__logo{
+    height: 100%;
+}
+
+.page-header__link{
+    vertical-align: center;
+
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 2vw;
+    line-height: 100%;
+    white-space: nowrap;
+
+    color: #FFACAC;
+    text-shadow: 6px 4px 4px #000000;
+}
+
+.page-header__get-started__icon{
+    height: 60%;
+
+    background-blend-mode: darken;
+    border-radius: 109px
+}
+
+.page-main__background{
+    width: 100vw;
+    height: 100vh;
+}
+
+.page-main h1{
+    position: absolute;
+    width: 490px;
+    height: 196px;
+    left: 215px;
+    top: 228px;
+
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 85px;
+    line-height: 104px;
+
+    color: #FFACAC;
+
+    text-shadow: 20px 4px 4px #000000;
+}
+
+.page-main__search{
+    position: absolute;
+    width: 607px;
+    height: 99px;
+    left: 165px;
+    top: 70%;
+    /*background: #FDFAFF;*/
+    background-image: url("assets/search.png");
+    background-repeat: no-repeat;
+    background-position: 5% 50%;
+    border-radius: 60px;
 }
