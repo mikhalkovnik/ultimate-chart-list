@@ -1,17 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
 
-html {
-    padding: 0;
-}
-
 body{
     padding: 0;
+    margin: 0;
 }
 
 .page-header{
     height: 15vh;
     background: #755E9C;
-    gap: 5%;
+    gap: 3%;
     display: flex;
     align-items: center;
     width: 100vw;
@@ -67,7 +64,8 @@ body{
 
 .page-main__search{
     position: absolute;
-    width: 607px;
+    width: 60vw;
+    /*margin: auto;*/
     height: 99px;
     left: 165px;
     top: 70%;
@@ -76,4 +74,33 @@ body{
     background-repeat: no-repeat;
     background-position: 5% 50%;
     border-radius: 60px;
+
+}
+
+.page-main__search:hover{
+    animation: anim 0.3s;
+}
+
+@media (max-width: 1000px) {
+    .page-main__search{
+        /*display: none;*/
+        animation: anim 0.3s;
+
+    }
+}
+@keyframes anim {
+    0%{
+        transform: rotate(0deg) scale(1);
+        color: red;
+    }
+    25%{
+        transform: rotate(1deg) scale(0.9);
+        color: yellow;
+    }
+    50%{
+        transform: rotate(-1deg) scale(1.1);
+    }
+    100%{
+        transform: rotate(0deg) scale(1);
+    }
 }
