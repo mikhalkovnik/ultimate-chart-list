@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,900&display=swap');
 
 body{
     padding: 0;
@@ -6,10 +6,11 @@ body{
 }
 
 .page-header{
-    height: 15vh;
+    height: max(5vw);
     background: #755E9C;
-    gap: 3%;
     display: flex;
+    flex-shrink: 1;
+    justify-content: space-between;
     align-items: center;
     width: 100vw;
 }
@@ -21,20 +22,22 @@ body{
 .page-header__link{
     vertical-align: center;
 
-    font-family: 'Montserrat', sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-style: italic;
     font-weight: 900;
     font-size: 2vw;
     line-height: 100%;
     white-space: nowrap;
-
+    padding-right: 1em;
     color: #FFACAC;
     text-shadow: 6px 4px 4px #000000;
 }
 
+
 .page-header__get-started__icon{
     height: 60%;
 
+    padding-left: 5vw;
     background-blend-mode: darken;
     border-radius: 109px
 }
@@ -54,7 +57,7 @@ body{
     font-family: 'Montserrat', sans-serif;
     font-style: italic;
     font-weight: 900;
-    font-size: 85px;
+    font-size: min(8vw, 8vh);
     line-height: 104px;
 
     color: #FFACAC;
@@ -75,6 +78,10 @@ body{
     background-position: 5% 50%;
     border-radius: 60px;
 
+}
+
+.page-header__link:hover{
+    animation: anim 0.3s;
 }
 
 .page-main__search:hover{
