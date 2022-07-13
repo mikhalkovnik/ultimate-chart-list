@@ -1,4 +1,8 @@
-
+/**
+ * Main class for handling a tradingview-lightweight-charts.
+ * Contains header with additional info (symbol, volume, capitalization, etc...)
+ * and the main chart canvas.
+ */
 class Chart {
 
     constructor(symbol, volume, capitalization, percentChange) {
@@ -10,6 +14,11 @@ class Chart {
         this.sortDirection = -1
     }
 
+    /**
+     * Create new chart inside specified container
+     * @param {ChartsContainer} chartsContainer - container where all charts are contained
+     * @param {HTMLElement} containerElement - HTML element from page where this chart will be spawned
+     */
     spawnBundle(chartsContainer, containerElement) {
         this.chartBundleId = `chart-bundle-${this.symbol}`
         this.chartDivId = `chart-div-${this.symbol}`
@@ -23,29 +32,33 @@ class Chart {
         this.tvChart = this.createLightweightChart(this.chartDiv)
         this.candlestickSeries = this.tvChart.addCandlestickSeries()
         this.applyScalesVisibilityFromCookies()
-        setTimeout(() => {
-            this.tvChart.timeScale().subscribeVisibleLogicalRangeChange(logicalRange => {
-                const windowHeight = window.innerHeight;
-                const windowScroll = window.scrollY;
-                const windowBottom = windowHeight + windowScroll;
-                for (const chart of chartsContainer.charts.values()) {
-                    if (chart === this.tvChart) return
-                    const chartRect = chart.chartDiv.getBoundingClientRect();
-                    if (chartRect.top < windowScroll) return;
-                    if (chartRect.bottom > windowBottom) return;
-                    console.log(chart.chartDiv)
-                    // chart.tvChart.timeScale().setVisibleLogicalRange(logicalRange)
-                    chart.chartDiv.classList.add('alarm')
-                    setTimeout(() => {
-                        // chart.chartDiv.classList.remove('alarm')
-                    }, 1000)
-                }
-            })
-        }, 2000)
+        // setTimeout(() => {
+        //     this.tvChart.timeScale().subscribeVisibleLogicalRangeChange(logicalRange => {
+        //         const windowHeight = window.innerHeight;
+        //         const windowScroll = window.scrollY;
+        //         const windowBottom = windowHeight + windowScroll;
+        //         for (const chart of chartsContainer.charts.values()) {
+        //             if (chart === this.tvChart) return
+        //             const chartRect = chart.chartDiv.getBoundingClientRect();
+        //             if (chartRect.top < windowScroll) return;
+        //             if (chartRect.bottom > windowBottom) return;
+        //             console.log(chart.chartDiv)
+        //             // chart.tvChart.timeScale().setVisibleLogicalRange(logicalRange)
+        //             chart.chartDiv.classList.add('alarm')
+        //             setTimeout(() => {
+        //                 // chart.chartDiv.classList.remove('alarm')
+        //             }, 1000)
+        //         }
+        //     })
+        // }, 2000)
 
         this.chartBundle.style.order = `${this.volume}`
     }
 
+    /**
+     * Create 'HTML string' with chart bundle from template inserting soe info: section with header and div for tradingview chart
+     * @return {string} - HTML string
+     */
     generateBundleHtml() {
         return `
                 <section id="${this.chartBundleId}" class="chart-bundle">
@@ -60,6 +73,12 @@ class Chart {
                 `
     }
 
+    // noinspection JSValidateJSDoc
+    /**
+     * Create and setup tradingview chart and spawn it in provided HTMLElement
+     * @param {HTMLElement} chartDiv - HTMLElement where chart will be spawned
+     * @return {ChartApi} - created chart for further manipulations
+     */
     createLightweightChart(chartDiv) {
         return LightweightCharts.createChart(chartDiv, {
             width: 0,
@@ -67,6 +86,9 @@ class Chart {
         });
     }
 
+    /**
+     * Take setting for chart scales visibility and apply it to all charts
+     */
     applyScalesVisibilityFromCookies() {
         const cookies = Cookies.get()
         for (const cookieName of Object.keys(cookies)) {
@@ -79,32 +101,61 @@ class Chart {
         }
     }
 
+    /**
+     * Set candlestick data to tradingview chart
+     * @param {Array<{time: number, open: number, high: number, low: number, close: number}>} data
+     */
     setCandlestickData(data) {
         this.candlestickSeries.setData(data)
     }
 
+    /**
+     * Fit all displayed data into visible area inside tradingview chart
+     */
     fitContent() {
         this.tvChart.timeScale().fitContent()
     }
 
+    /**
+     * Change sort property what charts will be sorted by
+     * @param {string} sortProperty - e.g.: volume, capitalization, changePercent
+     */
     changeSortProperty(sortProperty) {
+        if (this[sortProperty] === undefined) {
+            throw new Error(`Unknown sort property: ${sortProperty}`)
+        }
         this.sortProperty = sortProperty
         this.changeSort()
     }
 
+    /**
+     * Change sort direction what charts will bt sorted by
+     * @param {string} sortDirection - e.g.: asc, desc
+     */
     changeSortDirection(sortDirection) {
         this.sortDirection = sortDirection
         this.changeSort()
     }
 
+    /**
+     * Apply sorting for this chart (uses sortDirection and sortProperty)
+     */
     changeSort() {
         this.chartBundle.style.order = `${this.sortDirection * this[this.sortProperty]}`
     }
 
+    /**
+     * Update with of tradingview chart corresponding its container because tradingview chart is not adaptive itself
+     */
     recalculateWidth() {
         this.tvChart.applyOptions({width: this.chartDiv.clientWidth})
     }
 
+    /**
+     * Change (turn on/off) visibility of chart price scale
+     * @param {string} scale - e.g.: rightPriceScale, timeScale
+     * @param {boolean} visibility - true/false for turn the scale on/off on chart
+     */
     changeScaleVisibility(scale, visibility) {
         const options = {}
         options[scale] = {
@@ -117,6 +168,14 @@ class Chart {
 
 }
 
+/**
+ * Container for all interactive charts.
+ * @example
+ * const chartContainer = new ChartContainer()
+ * const chart = chartContainer.spawnChart('BTCUSDT', 100, 10, 1000)
+ * chart.setCandlestickData([{time: 10000, open: 10, high: ...}])
+ * chartsContainer.addColumn()
+ */
 class ChartsContainer {
 
     constructor() {
@@ -126,7 +185,7 @@ class ChartsContainer {
         this.columnCount = storedColumnCount !== undefined ? storedColumnCount : 3
         this.charts = new Map()
 
-        window.addEventListener('resize', e => {
+        window.addEventListener('resize', () => {
             clearTimeout(this.timerId);
             this.timerId = setTimeout(() => {
                 for (const chart of chartsContainer.charts.values()) {
@@ -137,6 +196,14 @@ class ChartsContainer {
         })
     }
 
+    /**
+     * Spawn new chart within itself with provided metadata
+     * @param {string} symbol
+     * @param {number} volume
+     * @param {number} capitalization
+     * @param {number} percentChange
+     * @return {Chart} - new created and displayed chart
+     */
     spawnChart(symbol, volume, capitalization, percentChange) {
         const chart = new Chart(symbol, volume, capitalization, percentChange)
         this.charts.set(symbol, chart)
@@ -146,6 +213,9 @@ class ChartsContainer {
         return chart
     }
 
+    /**
+     * Apply new grid template columns for chart container, recalculate width of all charts and store settings to cookies
+     */
     applyColumnCount() {
         this.chartsContainer.style.gridTemplateColumns = `repeat(${this.columnCount}, 1fr)`
         for (const chart of this.charts.values()) {
@@ -155,22 +225,36 @@ class ChartsContainer {
         Cookies.set('column-count', `${this.columnCount}`)
     }
 
+    /**
+     * Add column count and apply style changes
+     */
     addColumn() {
         this.columnCount++
         this.applyColumnCount()
     }
 
+    /**
+     * Remote column count and apply style changes
+     */
     removeColumn() {
         this.columnCount = this.columnCount <= 1 ? 1 : this.columnCount - 1
         this.applyColumnCount()
     }
 
+    /**
+     * Change sort property for all charts
+     * @param {string} sortProperty - e.g.: volume, capitalization, priceChange
+     */
     changeSortProperty(sortProperty) {
         for (const chart of this.charts.values()) {
             chart.changeSortProperty(sortProperty)
         }
     }
 
+    /**
+     * Change sort direction for all charts
+     * @param {string }sortDirection - e.g.: asc, desc
+     */
     changeSortDirection(sortDirection) {
         const direction = sortDirection === 'asc' ? 1 : -1
         for (const chart of this.charts.values()) {
@@ -178,29 +262,35 @@ class ChartsContainer {
         }
     }
 
+    /**
+     * Change scale visibility for all charts
+     * @param {string} scale - e.g.: rightPriceScale, timeScale
+     * @param {boolean} visibility
+     */
     changeScaleVisibility(scale, visibility) {
         for (const chart of this.charts.values()) {
             chart.changeScaleVisibility(scale, visibility)
         }
     }
 
-    moveCrosshair(point) {
-        // const artificialEvent = new MouseEvent('mousemove', {
-        //     view: window,
-        //     clientX: point.x - ,
-        //     clientY: point.y
-        // })
-        // console.log(artificialEvent);
-        for (const chart of this.charts.values()) {
-            chart.chartDiv.querySelector('div.tv-lightweight-charts').dispatchEvent(artificialEvent)
-        }
-    }
+    // moveCrosshair(point) {
+    //     // const artificialEvent = new MouseEvent('mousemove', {
+    //     //     view: window,
+    //     //     clientX: point.x - ,
+    //     //     clientY: point.y
+    //     // })
+    //     // console.log(artificialEvent);
+    //     for (const chart of this.charts.values()) {
+    //         chart.chartDiv.querySelector('div.tv-lightweight-charts').dispatchEvent(artificialEvent)
+    //     }
+    // }
 }
 
 
-// #============0!0============#
+// #=============0!0=============#
 
 const chartsContainer = new ChartsContainer()
+// noinspection SpellCheckingInspection
 const cachedSymbols = [
     {
         symbol: "BTCUSDT",
@@ -1062,6 +1152,9 @@ const cachedSymbols = [
     },
 ]
 
+/**
+ * Toggle commenting in these lines to change number of generated charts
+ */
 // for (let i = 0; i < cachedSymbols.length; i++) {
 for (let i = 0; i < 20; i++) {
     const chart = chartsContainer.spawnChart(
@@ -1081,9 +1174,13 @@ for (let i = 0; i < 20; i++) {
 }
 
 
-// #============0!0============#
+// #=============0!0=============#
 
-
+/**
+ * Generate candlestick with random data
+ * @param time
+ * @return {{time: number, open: number, high: number, low: number, close: number}}
+ */
 function randomizeCandlestick(time) {
     const positive = Math.random() > 0.5
     const open = randomizeInt(100, 200);
