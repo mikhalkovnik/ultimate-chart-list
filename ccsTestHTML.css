@@ -41,27 +41,31 @@ body{
     background-blend-mode: darken;
     border-radius: 109px
 }
+.page-main{
+	position: relative
+}
 
 .page-main__background{
     width: 100vw;
     height: 100vh;
+	 /* position: relative */
+	 text-align: center;
 }
 
 .page-main h1{
     position: absolute;
-    width: 490px;
-    height: 196px;
-    left: 215px;
-    top: 228px;
-
+    width: 440px;
+    height: 196px; 
+    left: 11vw;
+    top: 30vh;  
+	 white-space: pre-line;
     font-family: 'Montserrat', sans-serif;
     font-style: italic;
     font-weight: 900;
     font-size: min(8vw, 8vh);
-    line-height: 104px;
-
-    color: #FFACAC;
-
+    line-height: min(10vh,10vw);
+	    color: #FFACAC;
+/
     text-shadow: 20px 4px 4px #000000;
 }
 
@@ -79,6 +83,7 @@ body{
     border-radius: 60px;
 
 }
+
 
 .page-header__link:hover{
     animation: anim 0.3s;
