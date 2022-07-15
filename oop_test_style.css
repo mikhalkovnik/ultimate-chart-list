@@ -32,6 +32,10 @@ body {
     overflow: hidden;
     border: gray 0.25em solid;
     border-radius: 2em;
+    content-visibility: auto;
+    height: 33.3vw;
+    display: flex;
+    flex-flow: column;
 }
 
 .chart-bundle__header {
@@ -41,6 +45,7 @@ body {
     text-align: center;
     display: grid;
     grid-template-columns: 1fr;
+    flex-grow: 0;
 }
 
 .chart-bundle__header__symbol {
@@ -64,29 +69,11 @@ body {
 }
 
 .chart-bundle__div {
+    flex-grow: 1;
     background: deepskyblue;
     border-top: black 0.25em solid;
-    margin-top: 0.5em;
 }
 
 .page-footer {
     text-align: center;
-}
-
-.alarm {
-    position: relative;
-}
-
-.alarm:before {
-    position: absolute;
-    display: block;
-    z-index: 10;
-    height: 100%;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    content: '';
-    background: rgb(255 0 0 / 0.5);
-    pointer-events: none;
 }

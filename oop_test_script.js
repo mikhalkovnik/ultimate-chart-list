@@ -82,7 +82,7 @@ class Chart {
     createLightweightChart(chartDiv) {
         return LightweightCharts.createChart(chartDiv, {
             width: 0,
-            height: 300
+            height: chartDiv.getBoundingClientRect().height
         });
     }
 
@@ -147,7 +147,7 @@ class Chart {
     /**
      * Update with of tradingview chart corresponding its container because tradingview chart is not adaptive itself
      */
-    recalculateWidth() {
+    updateChartWidth() {
         this.tvChart.applyOptions({width: this.chartDiv.clientWidth})
     }
 
@@ -189,10 +189,27 @@ class ChartsContainer {
             clearTimeout(this.timerId);
             this.timerId = setTimeout(() => {
                 for (const chart of chartsContainer.charts.values()) {
-                    chart.recalculateWidth()
+                    chart.updateChartWidth()
                     chart.fitContent()
                 }
             }, 50)
+        })
+
+        window.addEventListener('scroll', () => {
+            clearTimeout(this.timerId);
+            this.timerId = setTimeout(() => {
+                for (const chart of chartsContainer.charts.values()) {
+                    const chartBundle = chart.chartBundle;
+                    const rect = chartBundle.getBoundingClientRect()
+                    if (rect.bottom < 0 || rect.top > window.innerHeight) {
+                        // chartBundle.style.contentVisibility = 'hidden'
+                        chartBundle.classList.add('alarm')
+                    } else {
+                        // chartBundle.style.contentVisibility = 'auto'
+                        chartBundle.classList.remove('alarm')
+                    }
+                }
+            }, 1)
         })
     }
 
@@ -219,7 +236,7 @@ class ChartsContainer {
     applyColumnCount() {
         this.chartsContainer.style.gridTemplateColumns = `repeat(${this.columnCount}, 1fr)`
         for (const chart of this.charts.values()) {
-            chart.recalculateWidth()
+            chart.updateChartWidth()
             chart.fitContent()
         }
         Cookies.set('column-count', `${this.columnCount}`)

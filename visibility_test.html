@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Visibility test</title>
+        <style>
+
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            .main-content {
+                background: linear-gradient(10deg, lawngreen, lightgrey);
+                padding: 1em;
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 1em;
+            }
+
+            .main-item {
+                border: orangered dashed 0.2em;
+                border-radius: 0.5em;
+                height: 25vw;
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr;
+                padding: 2em;
+                content-visibility: auto;
+            }
+
+            .main-item:hover {
+                background: red;
+                border: gold solid 0.2em;
+            }
+
+            .item-label {
+                background: deepskyblue;
+                border-radius: 0.5em;
+                text-align: center;
+                padding: 2em;
+            }
+
+            .alarm {
+                background: red;
+                border: gold solid 0.2em;
+                content-visibility: hidden;
+            }
+
+            .hide {
+                display: none;
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <main class="main-content" id="main-content">
+
+        </main>
+
+        <script>
+
+            const mainContent = document.getElementById('main-content');
+
+            function fillMainContentWithItems(count) {
+                for (let i = 0; i < count; i++) {
+                    mainContent.insertAdjacentHTML('beforeend', `
+                <div class="main-item" id="main-item-${i}">
+                    <div class="item-label">
+                        <p>${i}</p>
+                        <p>top: <span id="main-item-${i}__top"></span></p>
+                        <p>right: <span id="main-item-${i}__right"></span></p>
+                        <p>bottom: <span id="main-item-${i}__bottom"></span></p>
+                        <p>left: <span id="main-item-${i}__left"></span></p>
+                    </div>
+                </div>
+            `)
+                }
+            }
+
+            function updateMainContentItems() {
+                const mainItems = document.querySelectorAll('.main-item');
+                for (let i = 0; i < mainItems.length; i++) {
+                    const mainItem = mainItems.item(i)
+                    const rect = mainItem.getBoundingClientRect();
+                    mainItem.querySelector(`div > p > span#main-item-${i}__top`).innerHTML = `${Math.round(rect.top)}`
+                    mainItem.querySelector(`div > p > span#main-item-${i}__right`).innerHTML = `${Math.round(rect.right)}`
+                    mainItem.querySelector(`div > p > span#main-item-${i}__bottom`).innerHTML = `${Math.round(rect.bottom)}`
+                    mainItem.querySelector(`div > p > span#main-item-${i}__left`).innerHTML = `${Math.round(rect.left)}`
+
+                    if (rect.bottom < 0 || rect.top > window.innerHeight) {
+                        mainItem.classList.add('alarm')
+                    } else {
+                        mainItem.classList.remove('alarm')
+                    }
+                }
+            }
+
+            // #==========0!0===========#
+
+            fillMainContentWithItems(100)
+            updateMainContentItems()
+
+            window.addEventListener('scroll', () => {
+                clearTimeout(this.timerId);
+                this.timerId = setTimeout(() => {
+                    updateMainContentItems()
+                }, 25);
+            })
+        </script>
+    </body>
+</html>
