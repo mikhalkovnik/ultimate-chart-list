@@ -39,6 +39,13 @@
                     <input type="checkbox" name="chart-scales-visibility" value="timeScale" id="timeScale" onclick="chartsContainer.changeScaleVisibility(value, checked)">
                     <label for="timeScale">Time</label>
                 </span>
+                <span class="page-header__controls__control">
+                    Data source:
+                    <input type="radio" name="data-source" value="test-random" id="test-random" onclick="chartsContainer.changeDataSource(value)" checked>
+                    <label for="test-random">Test Random</label>
+                    <input type="radio" name="data-source" value="live-binance-spot" id="live-binance-spot" onclick="chartsContainer.changeDataSource(value)">
+                    <label for="live-binance-spot">Live Binance Spot</label>
+                </span>
             </section>
         </header>
 

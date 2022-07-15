@@ -290,6 +290,14 @@ class ChartsContainer {
         }
     }
 
+    /**
+     * Change data source for all charts
+     * @param {string} dataSource - e.g.: test-random, live-binance-spot
+     */
+    changeDataSource(dataSource) {
+        // TODO: continue implement
+    }
+
     // moveCrosshair(point) {
     //     // const artificialEvent = new MouseEvent('mousemove', {
     //     //     view: window,
