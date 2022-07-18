@@ -60,30 +60,31 @@ body{
     height: 196px; 
     left: 11vw;
     top: 30vh;  
-	 white-space: pre-line;
+    white-space: pre-line;
     font-family: 'Montserrat', sans-serif;
     font-style: italic;
     font-weight: 900;
     font-size: min(8vw, 8vh);
     line-height: min(10vh,10vw);
-	    color: #FFACAC;
-/
+    color: #FFACAC;
     text-shadow: 20px 4px 4px #000000;
 }
 
 .page-main{
-    display: grid;
+    display: flex;
+    flex-direction: column;
+
 }
 
 .page-main__search{
     position: absolute;
-    width: 60vw;
+    width: 75vw;
     /*margin: auto;*/
-    height: 99px;
-    left: 165px;
-    top: 70%;
+    height: 10vh;
+    left: 10%;
+    top: 65vh;
     /*background: #FDFAFF;*/
-    background-image: url("assets/search.png");
+    background-image: url("../assets/search.png");
     background-repeat: no-repeat;
     background-position: 5% 50%;
     border-radius: 60px;

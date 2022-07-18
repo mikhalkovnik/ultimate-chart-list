@@ -1180,8 +1180,8 @@ const cachedSymbols = [
 /**
  * Toggle commenting in these lines to change number of generated charts
  */
-// for (let i = 0; i < cachedSymbols.length; i++) {
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < cachedSymbols.length; i++) {
+// for (let i = 0; i < 20; i++) {
     const chart = chartsContainer.spawnChart(
         cachedSymbols[i].symbol,
         cachedSymbols[i].volume,
