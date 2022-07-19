@@ -119,15 +119,20 @@ footer h3{
     font-family: Montserrat, sans-serif;
 }
 
-footer .page-footer__lazybones{
+.page-footer__lazybones{
     padding: 0;
     border: none;
     font: inherit;
     color: inherit;
     background-color: transparent;
     cursor: pointer;
+    animation: logo 0.3s reverse;
+
 }
 
+.page-footer__lazybones:hover{
+    animation: logo 1s forwards;
+}
 
 @media (max-width: 1000px) {
     .page-main__search{
@@ -150,5 +155,14 @@ footer .page-footer__lazybones{
     }
     100%{
         transform: rotate(0deg) scale(1);
+    }
+}
+
+@keyframes logo {
+    0%{
+        transform: rotate(0deg);
+    }
+    100%{
+        transform: rotate(10deg);
     }
 }
