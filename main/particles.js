@@ -429,7 +429,10 @@ var pJS = function(tag_id, params){
       break;
 
       case 'edge':
-        pJS.canvas.ctx.rect(p.x-radius, p.y-radius, radius*0.3, radius*2);
+        pJS.canvas.ctx.rect(p.x-radius/2, p.y-radius/2, radius, radius);
+        pJS.canvas.ctx.lineTo([100, 222], p.y)
+        pJS.canvas.ctx.lineWidth = 10;
+
       break;
 
       case 'triangle':
@@ -448,8 +451,11 @@ var pJS = function(tag_id, params){
       break;
 
       case 'candlestick':
-        pJS.canvas.ctx.rect(p.x-radius, p.y-radius, radius, radius*5);
-        pJS.canvas.ctx.rect( p.x-radius/2, p.y-radius-5, p.vx, 100)
+        let tempStyle =  pJS.canvas.ctx.fillStyle;
+        pJS.canvas.ctx.rect(p.x-radius/2, p.y-radius/2*5, radius, radius*5);
+        pJS.canvas.ctx.rect( p.x - radius/10, p.y-radius - 50, radius/5, 100)
+        pJS.canvas.ctx.fillStyle = "white";
+        pJS.canvas.ctx.fillStyle = tempStyle;
             break
 
       case 'star':
