@@ -51,6 +51,12 @@ class Chart {
         //         }
         //     })
         // }, 2000)
+        this.tvChart.timeScale().subscribeVisibleLogicalRangeChange(logicalRange => {
+            clearTimeout(this.timerId)
+            this.timerId = setTimeout(() => {
+                this.percentChangeSpan.innerText = `${Math.round(logicalRange.from)}-${Math.round(logicalRange.to)}`
+            }, 10)
+        });
 
         this.chartBundle.style.order = `${this.volume}`
     }
