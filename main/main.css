@@ -1,5 +1,6 @@
 html{
-    background: #ffffff;
+    /* background: #ffffff; */
+background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(132,194,53,1) 35%, rgba(0,212,255,1) 100%);
 }
 
 body{
@@ -8,39 +9,37 @@ body{
 }
 
 #particles-js{
+	position: relative;
     left:0;
     top:0;
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(90deg, #ff8100, #ad00ff);
+
 }
 #particles-js-1{
     /*background: #4F00BC;*/
+	 position:absolute;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 100;
+    z-index: 0;
 }
 #particles-js-2{
     /*background: #44C1EB;*/
+	 position: absolute;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 10;
-}
-header{
-	font-family: 'Montserrat';
-	font-style: italic; 
-	font-size: 50px;
+    z-index: 0;
 }
 .heading{
 	
 	font-family: 'Montserrat';
 	font-style: italic; 
 	display: flex;
-	min-height: 30vh;
+	min-height: 40vh;
 	max-width: 100vw;
 	flex-direction: column;
 	justify-content: center;
@@ -52,12 +51,23 @@ header{
 .heading__title{
 	font-weight: 900;
 	font-size: 96px;
-	margin-bottom: 15px;
+	margin-bottom: -40px;
+	z-index: 2;
 }
 .heading__subtitle{
 	font-weight: 500;
 	font-size: 64px;
-	margin-bottom: 40px;
+	margin-bottom: 20px;
+	z-index: 2;
+}
+button{
+	font-family: 'Montserrat';
+	font-style: italic;
+	border-radius: 69px;
+	background: linear-gradient(145deg, #e6e6e6, #ffffff);
+	box-shadow:  10px 10px 51px #c4c4c4,
+	-10px -10px 51px #ffffff;
+	z-index: 9999;
 }
 .buttons__body{
 	padding: 0 4vw;
@@ -66,8 +76,36 @@ header{
 	text-align: center;
 }
 .search{
+display: block;
 width: 38vw;
 height: 12vh;
 background: #FDFAFF;
 border-radius: 600px;
+font-weight: 500;
+font-size: 40px;
+color: rgba(0, 0, 0, 0.45);
+text-align: center;
+margin: 0 auto;
+
+margin-bottom: 61px;
+}
+.search::before{
+	content: '';
+	background: url("/ultimate-chart-list/assets/search.png");
+}
+
+.search__under{
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 87px;
+}
+.start{
+	display: block;
+	margin: 0 auto;
+}
+.button{
+width: 15vw;
+height: 8vh;
+background: #FFFFFF;
+border-radius: 1000px;
 }
