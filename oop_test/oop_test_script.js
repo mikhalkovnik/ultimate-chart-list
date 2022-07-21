@@ -1,3 +1,4 @@
+const debugContainer = document.getElementById('debug-container');
 /**
  * Main class for handling a tradingview-lightweight-charts.
  * Contains header with additional info (symbol, volume, capitalization, etc...)
@@ -52,10 +53,14 @@ class Chart {
         //     })
         // }, 2000)
         this.tvChart.timeScale().subscribeVisibleLogicalRangeChange(logicalRange => {
-            clearTimeout(this.timerId)
-            this.timerId = setTimeout(() => {
-                this.percentChangeSpan.innerText = `${Math.round(logicalRange.from)}-${Math.round(logicalRange.to)}`
-            }, 10)
+            if (this.timeRangeChanging) return;
+
+            // clearTimeout(this.timerId);
+            // this.timerId = setTimeout(() => {
+                // console.log(`${this.symbol}`)
+                this.percentChangeSpan.innerText = `${Math.round(logicalRange.from)}-${Math.round(logicalRange.to)}`;
+                chartsContainer.changeVisibleLogicalRange(this, logicalRange);
+            // }, 10)
         });
 
         this.chartBundle.style.order = `${this.volume}`
@@ -172,6 +177,16 @@ class Chart {
         Cookies.set(scale, JSON.stringify({visible: visibility}))
     }
 
+    /**
+     * Change visible logical range of chart
+     * @param {{from: number, to: number}} logicalRange
+     */
+    changeVisibleLogicalRange(logicalRange) {
+        this.timeRangeChanging = true;
+        this.tvChart.timeScale().setVisibleLogicalRange(logicalRange);
+        this.timeRangeChanging = false;
+    }
+
 }
 
 /**
@@ -189,7 +204,8 @@ class ChartsContainer {
         this.displayedChartCount = document.getElementById('displayed-chart-count')
         const storedColumnCount = Cookies.get('column-count');
         this.columnCount = storedColumnCount !== undefined ? storedColumnCount : 3
-        this.charts = new Map()
+        this.charts = new Map();
+        this.visibleCharts = new Map();
 
         window.addEventListener('resize', () => {
             clearTimeout(this.timerId);
@@ -210,10 +226,18 @@ class ChartsContainer {
                     if (rect.bottom < 0 || rect.top > window.innerHeight) {
                         // chartBundle.style.contentVisibility = 'hidden'
                         chartBundle.classList.add('alarm')
+                        this.visibleCharts.delete(chart.symbol);
+                        chart.changeVisibleLogicalRange(this.logicalRange)
                     } else {
                         // chartBundle.style.contentVisibility = 'auto'
                         chartBundle.classList.remove('alarm')
+                        this.visibleCharts.set(chart.symbol, chart);
                     }
+                    debugContainer.innerHTML = `<div>${this.visibleCharts.size}</div>`
+                    for (const symbol of this.visibleCharts.keys()) {
+                        debugContainer.insertAdjacentHTML('beforeend', `<div>${symbol}</div>`)
+                    }
+
                 }
             }, 1)
         })
@@ -293,6 +317,21 @@ class ChartsContainer {
     changeScaleVisibility(scale, visibility) {
         for (const chart of this.charts.values()) {
             chart.changeScaleVisibility(scale, visibility)
+        }
+    }
+
+    /**
+     * Change visible time range for all charts
+     * @param {Chart} initChart
+     * @param {{from: number, to: number}} logicalRange
+     */
+    changeVisibleLogicalRange(initChart, logicalRange) {
+        // console.log('#===================#')
+        this.logicalRange = logicalRange;
+        for (const chart of this.visibleCharts.values()) {
+        // for (const chart of this.charts.values()) {
+            if (chart === initChart) continue;
+            chart.changeVisibleLogicalRange(logicalRange);
         }
     }
 
@@ -1186,6 +1225,8 @@ const cachedSymbols = [
 /**
  * Toggle commenting in these lines to change number of generated charts
  */
+
+const dataLength = randomizeInt(50, 100)
 for (let i = 0; i < cachedSymbols.length; i++) {
 // for (let i = 0; i < 20; i++) {
     const chart = chartsContainer.spawnChart(
@@ -1195,10 +1236,9 @@ for (let i = 0; i < cachedSymbols.length; i++) {
         cachedSymbols[i].percentChange
     )
 
-    const dataLength = randomizeInt(10, 100)
     const data = []
     for (let i = 0; i < dataLength; i++) {
-        data.push(randomizeCandlestick(i * 60 * 60 * 24))
+        data.push(randomizeCandlestick((i + 20000) * 60 * 60 * 24))
     }
     chart.setCandlestickData(data)
     chart.fitContent()
