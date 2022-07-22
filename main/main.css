@@ -61,7 +61,7 @@ body{
 	z-index: 2;
 }
 button{
-	font-family: 'Montserrat';
+	font-family: 'Montserrat', sans-serif;
 	font-style: italic;
 	border-radius: 69px;
 	background: linear-gradient(145deg, #e6e6e6, #ffffff);
@@ -76,7 +76,10 @@ button{
 	text-align: center;
 }
 .search{
-display: block;
+	display: flex;
+	justify-content: center;
+}
+.main__search{
 width: 38vw;
 height: 12vh;
 background: #FDFAFF;
@@ -86,7 +89,6 @@ font-size: 40px;
 color: rgba(0, 0, 0, 0.45);
 text-align: center;
 margin: 0 auto;
-
 margin-bottom: 61px;
 }
 .search::before{
@@ -97,11 +99,11 @@ margin-bottom: 61px;
 .search__under{
 	display: flex;
 	justify-content: space-between;
-	margin-bottom: 87px;
+	height: 200px;
 }
-.start{
-	display: block;
-	margin: 0 auto;
+
+.education{
+align-self: flex-end;
 }
 .button{
 width: 15vw;
@@ -109,3 +111,8 @@ height: 8vh;
 background: #FFFFFF;
 border-radius: 1000px;
 }
+/* .search:hover button{
+	width: 80vw;
+	height: 5vh;
+	display: none;
+} */
