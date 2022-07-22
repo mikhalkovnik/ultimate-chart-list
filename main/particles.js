@@ -254,6 +254,23 @@ var pJS = function(tag_id, params){
     this.x = position ? position.x : Math.random() * pJS.canvas.w;
     this.y = position ? position.y : Math.random() * pJS.canvas.h;
 
+    /* rotation */
+    this.rotation = 0;
+
+    /* random */
+    this.random = Math.random();
+    this.candlestickUpRandom = Math.random();
+    this.candlestickDownRandom = Math.random();
+    this.candlestickUpRandom = Math.random();
+    this.random = Math.random();
+
+    this.candlestickSettings = {
+      rotation : Math.random() * (Math.random() > 0.5 ? 1 : -1),
+      bodyUp : -Math.random()  * 100,
+      bodyDown : Math.random() * 100,
+      tailUp : -Math.random()  * 100,
+      tailDown : Math.random() * 100
+    }
     /* check position  - into the canvas */
     if(this.x > pJS.canvas.w - this.radius*2) this.x = this.x - this.radius;
     else if(this.x < this.radius*2) this.x = this.x + this.radius;
@@ -430,8 +447,6 @@ var pJS = function(tag_id, params){
 
       case 'edge':
         pJS.canvas.ctx.rect(p.x-radius/2, p.y-radius/2, radius, radius);
-        pJS.canvas.ctx.lineTo([100, 222], p.y)
-        pJS.canvas.ctx.lineWidth = 10;
 
       break;
 
@@ -451,12 +466,28 @@ var pJS = function(tag_id, params){
       break;
 
       case 'candlestick':
-        let tempStyle =  pJS.canvas.ctx.fillStyle;
-        pJS.canvas.ctx.rect(p.x-radius/2, p.y-radius/2*5, radius, radius*5);
-        pJS.canvas.ctx.rect( p.x - radius/10, p.y-radius - 50, radius/5, 100)
-        pJS.canvas.ctx.fillStyle = "white";
-        pJS.canvas.ctx.fillStyle = tempStyle;
-            break
+        const cs = this.candlestickSettings;
+        const ctx = pJS.canvas.ctx;
+
+        if (cs.rotation > 0){
+          cs.rotation += (cs.rotation > 360) ? (-360) : (cs.rotation/99);
+        }
+        else{
+          cs.rotation -= (cs.rotation < -360) ? (-360) : (-cs.rotation/99);
+        }
+
+        ctx.save();
+        ctx.beginPath();
+
+        const candlestickHeight = radius * 8 * this.random;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(cs.rotation*Math.PI/180);
+        ctx.rect(0, 0, 2, cs.bodyUp + cs.tailUp);
+        ctx.rect(0, 0, 2, cs.bodyDown + cs.tailDown);
+        ctx.rect(-radius, 0, radius * 2 , cs.bodyUp);
+        ctx.rect(-radius, 0, radius * 2 , cs.bodyDown);
+        ctx.restore();
+        break
 
       case 'star':
         pJS.fn.vendors.drawShape(
