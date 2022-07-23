@@ -255,22 +255,19 @@ var pJS = function(tag_id, params){
     this.y = position ? position.y : Math.random() * pJS.canvas.h;
 
     /* rotation */
-    this.rotation = 0;
+    this.rotationBasic = Math.random() * 360;
 
-    /* random */
-    this.random = Math.random();
-    this.candlestickUpRandom = Math.random();
-    this.candlestickDownRandom = Math.random();
-    this.candlestickUpRandom = Math.random();
+    /* random draw tools */
     this.random = Math.random();
 
     this.candlestickSettings = {
-      rotation : Math.random() * (Math.random() > 0.5 ? 1 : -1),
+      rotation : (Math.random() + this.rotationBasic) * (Math.random() > 0.5 ? 1 : -1),
       bodyUp : -Math.random()  * 100,
       bodyDown : Math.random() * 100,
       tailUp : -Math.random()  * 100,
       tailDown : Math.random() * 100
     }
+
     /* check position  - into the canvas */
     if(this.x > pJS.canvas.w - this.radius*2) this.x = this.x - this.radius;
     else if(this.x < this.radius*2) this.x = this.x + this.radius;
@@ -470,10 +467,10 @@ var pJS = function(tag_id, params){
         const ctx = pJS.canvas.ctx;
 
         if (cs.rotation > 0){
-          cs.rotation += (cs.rotation > 360) ? (-360) : (cs.rotation/99);
+          cs.rotation += (cs.rotation > 360) ? (-360) : (Math.random()/4);
         }
         else{
-          cs.rotation -= (cs.rotation < -360) ? (-360) : (-cs.rotation/99);
+          cs.rotation -= (cs.rotation < -360) ? (-360) : (Math.random()/4);
         }
 
         ctx.save();
@@ -735,10 +732,13 @@ var pJS = function(tag_id, params){
         //pJS.canvas.ctx.lineCap = 'round'; /* performance issue */
         
         /* path */
+        pJS.canvas.ctx.save();
         pJS.canvas.ctx.beginPath();
         pJS.canvas.ctx.moveTo(p1.x, p1.y);
         pJS.canvas.ctx.lineTo(p2.x, p2.y);
+        pJS.canvas.ctx.setLineDash([5,10])
         pJS.canvas.ctx.stroke();
+        pJS.canvas.ctx.restore();
         pJS.canvas.ctx.closePath();
 
       }
