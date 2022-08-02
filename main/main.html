@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html id="html" lang="en">
 <head>
    <meta charset="UTF-8">
    <title>Ultimate Chart List</title>
 	<link href="https://fonts.googleapis.com/css2?family=Inter&family=Montserrat:ital,wght@1,500;1,900&display=swap" rel="stylesheet">
-   <link type="text/css" href="main.css" rel="stylesheet">
+	<link type="text/css" href="main.css" rel="stylesheet">
+	<link type="text/css" href="charts.css" rel="stylesheet">
 </head>
 <body>
 	<div class="particles-js">
-		<header>
+		<header class="particles-header">
 			<h1 class="heading__title">Ultimate Chart List </h1>
 			<h2 class="heading__subtitle">Analyzing charts is now much easier!</h2>
 		</header>
@@ -21,11 +22,65 @@
 					<button class="start button">start</button>
 				</div>
 			</div>
-		<div id="particles-js"></div>
+			<div id="particles-js"></div>
 		</section>
 	</div>
+	<main>
+		<header class="page-header">
+			<h1>Ultimate Chart List</h1>
+			<h2>Displayed charts: <span id="displayed-chart-count">0</span></h2>
+			<section class="page-header__controls">
+                <span class="page-header__controls__control">
+                    Columns:
+                    <button onclick="chartsContainer.addColumn()">+</button>
+                    <button onclick="chartsContainer.removeColumn()">-</button>
+                </span>
+				<span class="page-header__controls__control">
+                    Sort Property:
+                    <input type="radio" name="sort-property" value="capitalization" id="capitalization" onclick="chartsContainer.changeSortProperty(value)">
+                    <label for="capitalization">Capitalization</label>
+                    <input type="radio" name="sort-property" value="volume" id="volume" onclick="chartsContainer.changeSortProperty(value)" checked>
+                    <label for="volume">Volume</label>
+                    <input type="radio" name="sort-property" value="percentChange" id="percentChange" onclick="chartsContainer.changeSortProperty(value)">
+                    <label for="percentChange">24hr Change %</label>
+                </span>
+				<span class="page-header__controls__control">
+                    Sort Direction:
+                    <input type="radio" name="sort-direction" value="desc" id="desc" onclick="chartsContainer.changeSortDirection(value)" checked>
+                    <label for="desc">Desc</label>
+                    <input type="radio" name="sort-direction" value="asc" id="asc" onclick="chartsContainer.changeSortDirection(value)">
+                    <label for="asc">Asc</label>
+                </span>
+				<span class="page-header__controls__control">
+                    Chart Scales:
+                    <input type="checkbox" name="chart-scales-visibility" value="rightPriceScale" id="rightPriceScale" onclick="chartsContainer.changeScaleVisibility(value, checked)">
+                    <label for="rightPriceScale">Price</label>
+                    <input type="checkbox" name="chart-scales-visibility" value="timeScale" id="timeScale" onclick="chartsContainer.changeScaleVisibility(value, checked)">
+                    <label for="timeScale">Time</label>
+                </span>
+				<span class="page-header__controls__control">
+                    Data source:
+                    <input type="radio" name="data-source" value="test-random" id="test-random" onclick="chartsContainer.changeDataSource(value)" checked>
+                    <label for="test-random">Test Random</label>
+                    <input type="radio" name="data-source" value="live-binance-spot" id="live-binance-spot" onclick="chartsContainer.changeDataSource(value)">
+                    <label for="live-binance-spot">Live Binance Spot</label>
+                </span>
+			</section>
+		</header>
 
-   <script src="particles.js"></script>
-   <script src="main.js"></script>
+		<main id="charts-container" class="charts-container"></main>
+
+		<footer class="page-footer">
+			<h3>Copyright &copy; 2022 Lazybones Ltd. All Rights reserved</h3>
+		</footer>
+
+		<div id="debug-container"></div>
+	</main>
+
+	<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+    <script src="particles.js"></script>
+	<script src="charts.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>

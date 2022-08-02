@@ -1,12 +1,8 @@
 html{
-	pointer-events: none;
-	background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(132,194,53,1) 35%, rgba(0,212,255,1) 100%);
 }
 
 body{
-    padding: 0;
-    margin: 0;
-	pointer-events: none;
+	background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(132,194,53,1) 35%, rgba(0,212,255,1) 100%);
 }
 
 .particles-js{
@@ -16,6 +12,7 @@ body{
     width: 100vw;
     height: 100vh;
 	z-index: 1;
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
 }
 
 #particles-js{
@@ -27,9 +24,10 @@ body{
     z-index: 1;
 }
 
-header{
+.ca
+.particles-header{
 	font-family: 'Montserrat',sans-serif;
-	font-style: italic; 
+	font-style: italic;
 	display: flex;
 	min-height: 40vh;
 	max-width: 100vw;
@@ -41,12 +39,14 @@ header{
 	text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 .heading__title{
+	content-visibility: hidden;
 	font-weight: 900;
 	font-size: 96px;
 	margin-bottom: -40px;
 	z-index: 2;
 }
 .heading__subtitle{
+	content-visibility: hidden;
 	font-weight: 500;
 	font-size: 64px;
 	margin-bottom: 20px;
@@ -60,6 +60,7 @@ button{
 	box-shadow:  10px 10px 51px #c4c4c4,
 	-10px -10px 51px #ffffff;
 	z-index: 9999;
+	/*mix-blend-mode: color;*/
 }
 .buttons__body{
 	padding: 0 4vw;
@@ -89,6 +90,7 @@ margin-bottom: 61px;
 }
 
 .search__under{
+	visibility: hidden;
 	display: flex;
 	justify-content: space-between;
 	height: 200px;

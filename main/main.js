@@ -1,3 +1,14 @@
+console.log("hi");
+const background = document.querySelector(".particles-js");
+const scroller = document.getElementById("html");
+window.addEventListener("scroll", ev => {
+    let scrollTop = scroller.scrollTop;
+    let elementHeight = window.screen.height;
+    let opacity = ((elementHeight - scrollTop) / elementHeight) + 0.50;
+    // background.style.opacity = `${opacity}`;
+    console.log(opacity);
+});
+
 particlesJS("particles-js", {
     "particles": {
         "number": {
@@ -59,7 +70,7 @@ particlesJS("particles-js", {
             "random": true,
             "straight": false,
             "out_mode": "bounce",
-            "bounce": true,
+            "bounce": false,
             "attract": {
                 "enable": false,
                 "rotateX": 30,
@@ -71,11 +82,11 @@ particlesJS("particles-js", {
         "detect_on": "canvas",
         "events": {
             "onhover": {
-                "enable": true,
+                "enable": false,
                 "mode": ["bubble", "grab"]
             },
             "onclick": {
-                "enable": true,
+                "enable": false,
                 "mode": "repulse"
             },
             "resize": true
@@ -109,28 +120,9 @@ particlesJS("particles-js", {
     "retina_detect": true
 });
 
-/* ---- stats.js config ---- */
 
-// var count_particles, stats, update;
-//
-// class Stats {
-//
-// }
-//
-// stats = new Stats();
-// stats.setMode(0);
-// stats.domElement.style.position = 'absolute';
-// stats.domElement.style.left = '0px';
-// stats.domElement.style.top = '0px';
-// document.body.appendChild(stats.domElement);
-// update = function() {
-//     stats.begin();
-//     stats.end();
-//     if (window.pJSDom[0].pJS.particles && window.pJSDom[0].pJS.particles.array) {
-//         count_particles.innerText = window.pJSDom[0].pJS.particles.array.length;
-//     }
-//     requestAnimationFrame(update);
-// };
-// requestAnimationFrame(update);
-//
 
+    // console.log(scroller.scrollTop);
+//
+//     return opacity;
+// document.getElementById("html").style.opacity = getOpacity();
