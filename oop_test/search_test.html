@@ -1019,7 +1019,7 @@
                     const queryLength = query.length;
                     const queryEndPosition = position + queryLength;
                     const prefix = symbol.substring(0, position);
-                    const suffix = symbol.substring(queryEndPosition + 1)
+                    const suffix = symbol.substring(queryEndPosition);
 
                     const highlight = `${prefix}<span class="search-text-highlight">${query}</span>${suffix}`
 
