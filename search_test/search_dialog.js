@@ -38,7 +38,6 @@ searchInput.addEventListener('input', e => {
         }
     }
 
-
 })
 
 /**
