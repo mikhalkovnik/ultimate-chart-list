@@ -36,7 +36,6 @@ body {
     height: 20vmax;
     display: flex;
     flex-flow: column;
-    pointer-events: none;
 }
 
 .chart-bundle__header {
