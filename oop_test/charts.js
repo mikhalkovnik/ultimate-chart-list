@@ -49,13 +49,14 @@ class Chart {
     generateBundleHtml() {
         return `
                 <section id="${this.chartBundleId}" class="chart-bundle">
-                    <header class="chart-bundle__header">
-                        <h3 class="chart-bundle__header__symbol">${this.symbol}</h3>
-                        <span class="chart-bundle__header__capitalization">Capitalization: ${this.capitalization}$</span>
-                        <span class="chart-bundle__header__volume">24hr Volume: ${this.volume}$</span>
-                        <span class="chart-bundle__header__percent-change">24hr Change: <span id="${this.percentChangeId}">${this.percentChange}</span>%</span>
-                    </header>
-                    <main id="${this.chartDivId}" class="chart-bundle__div"></main>
+                    <main id="${this.chartDivId}" class="chart-bundle__div">
+                        <header class="chart-bundle__header">
+                            <h3 class="chart-bundle__header__symbol">${this.symbol}</h3>
+                            <span class="chart-bundle__header__capitalization">Cap: ${this.capitalization}$</span>
+                            <span class="chart-bundle__header__volume">Vol: ${this.volume}$  <span id="${this.percentChangeId}">${this.percentChange}%</span>
+                            <span class="chart-bundle__header__percent-change"><span id="${this.percentChangeId}"></span></span>
+                        </header>
+                    </main>
                 </section>
                 `
     }
@@ -194,7 +195,7 @@ class ChartsContainer {
                     chart.updateChartWidth()
                     chart.fitContent()
                 }
-            }, 50)
+            }, 50);
         })
 
         window.addEventListener('scroll', () => {
@@ -362,3 +363,13 @@ for (let i = 0; i < cachedSymbols.length; i++) {
     chart.setCandlestickData(data)
     chart.fitContent()
 }
+
+const chartBundle = document.querySelectorAll(".chart-bundle");
+window.addEventListener("click", e => {
+    chartBundle.forEach(chartBundleElement =>{
+        chartBundleElement.style.pointerEvents = "auto";
+    });
+});
+
+
+

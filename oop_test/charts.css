@@ -33,19 +33,26 @@ body {
     border: gray 0.25em solid;
     border-radius: 2em;
     content-visibility: auto;
-    height: 20vw;
+    height: 20vmax;
     display: flex;
     flex-flow: column;
+    pointer-events: none;
 }
 
 .chart-bundle__header {
-    /*background: hotpink;*/
-    /*margin: 0 10% 0 10%;*/
-    /*padding: 0 1em 0 1em;*/
     text-align: center;
-    display: grid;
-    grid-template-columns: 1fr;
-    flex-grow: 0;
+    display: flex;
+    /*grid-template-columns: 1fr;*/
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-direction: column;
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    font-size: 1vmax;
+    padding-left: 1.5vmin;
+    align-items: start;
+    pointer-events: none;
 }
 
 .chart-bundle__header__symbol {
@@ -71,7 +78,8 @@ body {
 .chart-bundle__div {
     flex-grow: 1;
     background: deepskyblue;
-    border-top: black 0.25em solid;
+    /*border-top: black 0.25em solid;*/
+    position: relative;
 }
 
 .page-footer {

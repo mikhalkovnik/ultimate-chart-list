@@ -4,9 +4,8 @@ const scroller = document.getElementById("html");
 window.addEventListener("scroll", ev => {
     let scrollTop = scroller.scrollTop;
     let elementHeight = window.screen.height;
-    let opacity = ((elementHeight - scrollTop) / elementHeight) + 0.50;
-    // background.style.opacity = `${opacity}`;
-    console.log(opacity);
+    let opacity = ((elementHeight - scrollTop) / elementHeight) + 0.30;
+    background.style.opacity = `${opacity}`;
 });
 
 particlesJS("particles-js", {
