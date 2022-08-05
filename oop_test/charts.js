@@ -364,12 +364,13 @@ for (let i = 0; i < cachedSymbols.length; i++) {
     chart.fitContent()
 }
 
-const chartBundle = document.querySelectorAll(".chart-bundle");
-window.addEventListener("click", e => {
-    chartBundle.forEach(chartBundleElement =>{
-        chartBundleElement.style.pointerEvents = "auto";
-    });
-});
+// const chartBundle = document.querySelectorAll(".chart-bundle");
+// window.addEventListener("mousemove", e => {
+//     console.log(e.target.style.pointerEvents = "auto");
+//     chartBundle.forEach(chartBundleElement =>{
+//         chartBundleElement.style.pointerEvents = "auto";
+//     });
+// });
 
 
 
