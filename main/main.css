@@ -14,6 +14,7 @@ body{
 	background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
 }
 
+
 #particles-js{
 	position:absolute;
     top: 0;
@@ -37,14 +38,14 @@ body{
 	text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 .heading__title{
-	content-visibility: hidden;
+	content-visibility: auto;
 	font-weight: 900;
 	font-size: 96px;
 	margin-bottom: -40px;
 	z-index: 2;
 }
 .heading__subtitle{
-	content-visibility: hidden;
+	content-visibility: auto;
 	font-weight: 500;
 	font-size: 64px;
 	margin-bottom: 20px;
@@ -108,3 +109,14 @@ border-radius: 1000px;
 	height: 5vh;
 	display: none;
 } */
+.charts-container{
+	position: relative;
+}
+
+.charts-container__border{
+	position: absolute;
+	background: rgba(0, 255, 108, 0.4);
+	height: 100%;
+	z-index: 100;
+	width: 100px;
+}
