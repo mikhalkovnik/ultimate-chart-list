@@ -4,7 +4,7 @@ const scroller = document.getElementById("html");
 window.addEventListener("scroll", ev => {
     let scrollTop = scroller.scrollTop;
     let elementHeight = window.screen.height;
-    let opacity = ((elementHeight - scrollTop) / elementHeight) + 0.30;
+    let opacity = ((elementHeight - scrollTop) / elementHeight) + 0.3;
     background.style.opacity = `${opacity}`;
 });
 

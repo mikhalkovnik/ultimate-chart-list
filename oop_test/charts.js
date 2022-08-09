@@ -25,6 +25,7 @@ class Chart {
         this.chartBundleId = `chart-bundle-${this.symbol}`
         this.chartDivId = `chart-div-${this.symbol}`
         this.percentChangeId = `chart-percent-change-${this.symbol}`
+        this.link = "https://ru.tradingview.com/symbols/"+this.symbol+"/"
         const bundleHtml = this.generateBundleHtml();
         containerElement.insertAdjacentHTML('beforeend', bundleHtml)
         this.chartBundle = document.getElementById(this.chartBundleId)
@@ -38,7 +39,6 @@ class Chart {
             if (this.timeRangeChanging) return;
             chartsContainer.changeVisibleLogicalRange(this, logicalRange);
         });
-
         this.chartBundle.style.order = `${this.volume}`
     }
 
@@ -46,12 +46,13 @@ class Chart {
      * Create 'HTML string' with chart bundle from template inserting soe info: section with header and div for tradingview chart
      * @return {string} - HTML string
      */
+
     generateBundleHtml() {
         return `
                 <section id="${this.chartBundleId}" class="chart-bundle">
                     <main id="${this.chartDivId}" class="chart-bundle__div">
                         <header class="chart-bundle__header">
-                            <h3 class="chart-bundle__header__symbol">${this.symbol}</h3>
+                            <h3 class="chart-bundle__header__symbol"> <a href=${this.link} class="link" target="_blank">${this.symbol}</a> </h3>
                             <span class="chart-bundle__header__capitalization">Cap: ${this.capitalization}$</span>
                             <span class="chart-bundle__header__volume">Vol: ${this.volume}$  <span id="${this.percentChangeId}">${this.percentChange}%</span>
                             <span class="chart-bundle__header__percent-change"><span id="${this.percentChangeId}"></span></span>
@@ -347,8 +348,8 @@ const chartsContainer = new ChartsContainer()
 /**
  * Toggle commenting in these lines to change number of generated charts
  */
-for (let i = 0; i < cachedSymbols.length; i++) {
-// for (let i = 0; i < 20; i++) {
+//for (let i = 0; i < cachedSymbols.length; i++) {
+ for (let i = 0; i < 9; i++) {
     const chart = chartsContainer.spawnChart(
         cachedSymbols[i].symbol,
         cachedSymbols[i].volume,

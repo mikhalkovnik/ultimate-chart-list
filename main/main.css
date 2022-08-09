@@ -103,6 +103,25 @@ height: 8vh;
 background: #FFFFFF;
 border-radius: 1000px;
 }
+
+.side-panel{
+	position: fixed;
+	opacity: 0;
+	z-index: 100;
+	top: 0;
+	right: -120px;
+	transition: all ease 0.35s;
+	width: 130px;
+	height: 100vh;
+	/*padding: 40px 20px;*/
+}
+
+.side-panel:hover {
+	background: linear-gradient(to right, gray, black);
+	opacity: 1;
+	right: 0;
+}
+
 /* .search:hover button{
 	width: 80vw;
 	height: 5vh;
