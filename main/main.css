@@ -115,8 +115,14 @@ border-radius: 1000px;
 
 .charts-container__border{
 	position: absolute;
-	background: rgba(0, 255, 108, 0.4);
+	background: rgba(0, 255, 108, 0.62);
+	height: 100%;
+	width: 100px;
+}
+
+.csc{
+	position: absolute;
 	height: 100%;
 	z-index: 100;
-	width: 100px;
+	width: 100%;
 }

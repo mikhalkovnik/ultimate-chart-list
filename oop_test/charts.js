@@ -263,6 +263,7 @@ class ChartsContainer {
     addColumn() {
         this.columnCount++
         this.applyColumnCount()
+        addChartScrollBorder();
     }
 
     /**
@@ -271,6 +272,7 @@ class ChartsContainer {
     removeColumn() {
         this.columnCount = this.columnCount <= 1 ? 1 : this.columnCount - 1
         this.applyColumnCount()
+        removeChartScrollBorder();
     }
 
     /**
