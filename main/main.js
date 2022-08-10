@@ -120,7 +120,6 @@ particlesJS("particles-js", {
 });
 
 
-
     // console.log(scroller.scrollTop);
 //
 //     return opacity;

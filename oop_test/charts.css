@@ -38,6 +38,39 @@ body {
     flex-flow: column;
 }
 
+.chart-bundle__div {
+    flex-grow: 1;
+    background: deepskyblue;
+    position: relative;
+    justify-content: center;
+    z-index: 1000;
+}
+
+
+.chart-bundle__scroll__zone__border{
+    position: absolute;
+    width: 10px;
+
+    height: 100%;
+    z-index: 19;
+    transition: opacity 0.8s;
+    transition-delay: 0.1s;
+}
+
+.chart-bundle__scroll__zone__border:hover{
+    opacity: 0;
+}
+
+.chart-bundle__scroll__zone__border__R{
+    background: linear-gradient(90deg, rgba(128, 128, 128, 0), gray);
+    right: 0;
+}
+
+.chart-bundle__scroll__zone__border__L{
+    background: linear-gradient(90deg, gray, rgba(128, 128, 128, 0));
+    left: 0;
+}
+
 .chart-bundle__header {
     text-align: center;
     display: flex;
@@ -72,13 +105,6 @@ body {
 
 .chart-bundle__header__percent-change {
     /*background: lightyellow;*/
-}
-
-.chart-bundle__div {
-    flex-grow: 1;
-    background: deepskyblue;
-    /*border-top: black 0.25em solid;*/
-    position: relative;
 }
 
 .page-footer {

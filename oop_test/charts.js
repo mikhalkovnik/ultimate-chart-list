@@ -48,7 +48,7 @@ class Chart {
      */
     generateBundleHtml() {
         return `
-                <section id="${this.chartBundleId}" class="chart-bundle">
+                <section id="${this.chartBundleId}" class="chart-bundle" xmlns="http://www.w3.org/1999/html">
                     <main id="${this.chartDivId}" class="chart-bundle__div">
                         <header class="chart-bundle__header">
                             <h3 class="chart-bundle__header__symbol">${this.symbol}</h3>
@@ -56,6 +56,10 @@ class Chart {
                             <span class="chart-bundle__header__volume">Vol: ${this.volume}$  <span id="${this.percentChangeId}">${this.percentChange}%</span>
                             <span class="chart-bundle__header__percent-change"><span id="${this.percentChangeId}"></span></span>
                         </header>
+<!--                        <div class="chart-bundle__scroll__zone">-->
+<!--                            <div class="chart-bundle__scroll__zone__border__L chart-bundle__scroll__zone__border"></div>-->
+<!--                            <div class="chart-bundle__scroll__zone__border__R chart-bundle__scroll__zone__border"></div>-->
+<!--                        </div>-->
                     </main>
                 </section>
                 `
