@@ -68,7 +68,13 @@
 			</section>
 		</header>
 
-		<div class="side-panel"></div>
+		<div class="side-panel" id="i-need-it">
+			<span class="buttons-on-panel">
+				Columns:
+				<button onclick="chartsContainer.addColumn()">+</button>
+				<button onclick="chartsContainer.removeColumn()">-</button>
+			</span>
+		</div>
 
 		<main id="charts-container" class="charts-container"></main>
 

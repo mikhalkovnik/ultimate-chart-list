@@ -113,13 +113,31 @@ border-radius: 1000px;
 	transition: all ease 0.35s;
 	width: 130px;
 	height: 100vh;
-	/*padding: 40px 20px;*/
 }
 
 .side-panel:hover {
-	background: linear-gradient(to right, gray, black);
-	opacity: 1;
+	background: gray;
+	opacity: 0.95;
 	right: 0;
+}
+
+.buttons-on-panel {
+	position: absolute;
+	display: flex;
+	height: 200px;
+	bottom: 300px;
+	font-size: 20px;
+	left: 25px;
+	flex-direction: column;
+	justify-content: space-between;
+	background: gray;
+}
+
+#i-need-it button{
+	background: white;
+	font-size: 30px;
+	color: chocolate;
+	height: 45px;
 }
 
 /* .search:hover button{
