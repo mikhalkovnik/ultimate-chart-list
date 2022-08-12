@@ -25,6 +25,7 @@ body {
 }
 
 .charts-container {
+    position: relative;
     display: grid;
     gap: 0.5rem;
     justify-content: center;

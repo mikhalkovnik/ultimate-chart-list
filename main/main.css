@@ -105,14 +105,14 @@ border-radius: 1000px;
 }
 
 .side-panel{
-	position: fixed;
-	opacity: 0;
-	z-index: 100;
-	top: 0;
-	right: -120px;
+	position: absolute;
+	/*opacity: 0;*/
+	z-index: 20;
+	right: 0;
 	transition: all ease 0.35s;
-	width: 130px;
-	height: 100vh;
+	width: 10%;
+	height: 100%;
+	background: #060F2A;
 }
 
 .side-panel:hover {
@@ -122,26 +122,21 @@ border-radius: 1000px;
 }
 
 .buttons-on-panel {
-	position: absolute;
 	display: flex;
-	height: 200px;
-	bottom: 300px;
-	font-size: 20px;
-	left: 25px;
-	flex-direction: column;
+	width: 100%;
+	height: 100%;
+	flex-direction: row;
 	justify-content: space-between;
-	background: gray;
+	gap: 3%;
 }
 
-#i-need-it button{
-	background: white;
-	font-size: 30px;
-	color: chocolate;
-	height: 45px;
-}
+#side-panel button{
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	width: 50%;
 
-/* .search:hover button{
-	width: 80vw;
-	height: 5vh;
-	display: none;
-} */
+	font-size: 50px;
+	background: lightgreen;
+	color: blue;
+}
